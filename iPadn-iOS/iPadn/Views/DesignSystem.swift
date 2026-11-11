@@ -203,7 +203,7 @@ struct RefreshButton: View {
             if showsSpinner { ProgressView().controlSize(.small).transition(.opacity) }
         }
         .revealAfterDelay(busy, into: $showsSpinner)
-        .accessibilityValue(busy ? "正在刷新" : "")
+        .accessibilityValue(busy ? String(localized: "正在刷新") : "")
     }
 }
 

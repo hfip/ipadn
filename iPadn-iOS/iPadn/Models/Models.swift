@@ -16,22 +16,22 @@ enum AppErrorMessage {
         if error is CancellationError { return "" }
         let ns = error as NSError
         if ns.domain == NSURLErrorDomain {
-            return "网络连接暂时不可用，请检查网络后重试。"
+            return String(localized: "网络连接暂时不可用，请检查网络后重试。")
         }
         if error is AppleAuthError || error is AppleLoginError {
-            return "请到「账号」中重新登录 Apple 账号后再试。"
+            return String(localized: "请到「账号」中重新登录 Apple 账号后再试。")
         }
         let message = error.localizedDescription
         if message.contains("2002") || message.contains("Your password has changed") {
-            return "Apple 账号需要重新登录，请到「账号」页面更新密码。"
+            return String(localized: "Apple 账号需要重新登录，请到「账号」页面更新密码。")
         }
         if let status = error as? HTTPStatusError {
-            return "商店暂时无法返回结果（\(status.code)），请稍后重试或更换地区。"
+            return String(localized: "商店暂时无法返回结果（\(status.code)），请稍后重试或更换地区。")
         }
         if message.contains("HTTP") || message.contains("JSON") || message.contains("itunes.apple.com") {
-            return "商店暂时无法返回结果，请稍后重试或更换地区。"
+            return String(localized: "商店暂时无法返回结果，请稍后重试或更换地区。")
         }
-        return "暂时无法完成搜索，请稍后重试。"
+        return String(localized: "暂时无法完成搜索，请稍后重试。")
     }
 }
  

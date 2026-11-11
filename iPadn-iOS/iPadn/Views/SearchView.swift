@@ -11,14 +11,32 @@ struct SearchView: View {
     @State private var getting: StoreApp?
     @State private var viewingFavorite: StoreApp?
     @State private var headerAway = false
-    private static let regions = [("CN", "中国大陆"), ("US", "美国"), ("HK", "香港"), ("TW", "台湾"), ("JP", "日本"), ("GB", "英国"), ("SG", "新加坡"), ("CA", "加拿大"), ("AU", "澳大利亚"), ("KR", "韩国"), ("DE", "德国"), ("FR", "法国")]
+    private static let regionCodes = ["CN", "US", "HK", "TW", "JP", "GB", "SG", "CA", "AU", "KR", "DE", "FR"]
+    /// Storefront names follow the app's language, not the storefront's own.
+    private static func regionName(_ code: String) -> String {
+        switch code {
+        case "CN": return String(localized: "中国大陆")
+        case "US": return String(localized: "美国")
+        case "HK": return String(localized: "香港")
+        case "TW": return String(localized: "台湾")
+        case "JP": return String(localized: "日本")
+        case "GB": return String(localized: "英国")
+        case "SG": return String(localized: "新加坡")
+        case "CA": return String(localized: "加拿大")
+        case "AU": return String(localized: "澳大利亚")
+        case "KR": return String(localized: "韩国")
+        case "DE": return String(localized: "德国")
+        case "FR": return String(localized: "法国")
+        default: return code
+        }
+    }
     var body: some View {
         List {
             Section {
-                PageHeader(title: "搜索") { AccountMenuButton() }
+                PageHeader(title: String(localized: "搜索")) { AccountMenuButton() }
                     .onScrolledUnderBar { headerAway = $0 }
                     .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 2, trailing: 12))
-                SearchInput(text: $store.searchText, placeholder: "应用名称、App ID 或链接", capsule: true,
+                SearchInput(text: $store.searchText, placeholder: String(localized: "应用名称、App ID 或链接"), capsule: true,
                             submit: { store.search() }, clear: { store.clearSearch() })
                     .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -41,7 +59,7 @@ struct SearchView: View {
             }
             if !store.results.isEmpty {
                 Section {
-                    ForEach(store.results) { app in resultRow(app, note: app.tvOSCandidate == true ? "可能支持 Apple TV" : nil) }
+                    ForEach(store.results) { app in resultRow(app, note: app.tvOSCandidate == true ? String(localized: "可能支持 Apple TV") : nil) }
                 } header: { Text("\(store.results.count) 个结果") }
             }
             if !store.localResults.isEmpty {
@@ -51,8 +69,9 @@ struct SearchView: View {
             }
             if store.results.isEmpty && store.localResults.isEmpty && store.hasSearched && !store.searching && store.searchError == nil {
                 Section {
-                    EmptyState(title: "无结果", message: "“\(store.lastSearchTerm)”没有匹配的应用。试试 App ID、App Store 链接或其他地区。",
-                               symbol: "magnifyingglass", actionTitle: "清除搜索", action: { store.clearSearch() })
+                    EmptyState(title: String(localized: "无结果"),
+                               message: String(localized: "“\(store.lastSearchTerm)”没有匹配的应用。试试 App ID、App Store 链接或其他地区。"),
+                               symbol: "magnifyingglass", actionTitle: String(localized: "清除搜索"), action: { store.clearSearch() })
                 }.listRowBackground(Color.clear)
             }
             if !store.hasSearched && !store.searching {
@@ -62,10 +81,10 @@ struct SearchView: View {
         .animation(UX.motion(reduceMotion), value: store.searchHistory.map(\.id))
         .animation(UX.motion(reduceMotion), value: store.favorites.map(\.id))
         .toolPage()
-        .rootTabBar("搜索", headerScrolledAway: headerAway)
+        .rootTabBar(String(localized: "搜索"), headerScrolledAway: headerAway)
         .navigationDestination(item: $getting) { app in AppDetailView(app: app, autoStart: true) }
         .navigationDestination(item: $viewingFavorite) { app in AppDetailView(app: app) }
-        .actionConfirmation(isPresented: $confirmClear, title: "清除最近搜索？", confirmTitle: "清除") { withAnimation { store.clearHistory() } }
+        .actionConfirmation(isPresented: $confirmClear, title: String(localized: "清除最近搜索？"), confirmTitle: String(localized: "清除")) { withAnimation { store.clearHistory() } }
         .task { await store.loadNameCatalog() }
         .task { await store.checkWatched() }
         .task(id: apple.activeID) { await store.ensureOwnedLoaded() }
@@ -74,12 +93,13 @@ struct SearchView: View {
     private func resultRow(_ app: StoreApp, note: String?) -> some View {
         NavigationLink { AppDetailView(app: app) } label: {
             AppRow(app: app, subtitle: note.map { [app.displayCategory, $0].filter { !$0.isEmpty }.joined(separator: " · ") }) {
-                RowCapsule(title: "获取") { getting = app; UX.feedback() }
-                    .accessibilityLabel("获取 \(app.name)")
+                RowCapsule(title: String(localized: "获取")) { getting = app; UX.feedback() }
+                    .accessibilityLabel(String(localized: "获取 \(app.name)"))
             }
         }
         .contextMenu {
-            Button(store.isFavorite(app) ? "取消关注" : "关注", systemImage: store.isFavorite(app) ? "bell.slash" : "bell") {
+            Button(store.isFavorite(app) ? String(localized: "取消关注") : String(localized: "关注"),
+                   systemImage: store.isFavorite(app) ? "bell.slash" : "bell") {
                 store.toggleFavorite(app); UX.feedback()
             }
         }
@@ -116,12 +136,12 @@ struct SearchView: View {
                     Button { viewingFavorite = app } label: {
                         HStack {
                             WatchRow(app: app)
-                            Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+                            Image(systemName: "chevron.forward").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
                         }.contentShape(Rectangle())
                     }
                         .buttonStyle(RevealRowButtonStyle())
                         .accessibilityIdentifier("favorite." + app.id)
-                        .revealDelete(id: "favorite." + app.id, title: "取消关注") { withAnimation { store.toggleFavorite(app) } }
+                        .revealDelete(id: "favorite." + app.id, title: String(localized: "取消关注")) { withAnimation { store.toggleFavorite(app) } }
                 }
             } header: {
                 HStack {
@@ -136,7 +156,7 @@ struct SearchView: View {
     private func chip(_ title: String, symbol: String) -> some View {
         HStack(spacing: 5) {
             Image(systemName: symbol).font(.caption.weight(.semibold))
-            Text(title).font(.subheadline.weight(.medium))
+            Text(verbatim: title).font(.subheadline.weight(.medium))
             Image(systemName: "chevron.down").font(.caption2.weight(.bold))
         }
         .foregroundStyle(.primary)
@@ -147,10 +167,10 @@ struct SearchView: View {
     private var regionPicker: some View {
         Menu {
             Picker("商店地区", selection: $store.settings.store.country) {
-                ForEach(Self.regions, id: \.0) { code, label in Text(label).tag(code) }
+                ForEach(Self.regionCodes, id: \.self) { code in Text(verbatim: Self.regionName(code)).tag(code) }
             }
-        } label: { chip(Self.regions.first { $0.0 == store.settings.store.country }?.1 ?? store.settings.store.country, symbol: "globe") }
-        .accessibilityLabel("商店地区")
+        } label: { chip(Self.regionName(store.settings.store.country), symbol: "globe") }
+        .accessibilityLabel(String(localized: "商店地区"))
     }
     private var platformPicker: some View {
         Menu {
@@ -158,7 +178,7 @@ struct SearchView: View {
                 ForEach(AppPlatform.allCases) { platform in Label(platform.title, systemImage: platform.symbol).tag(platform) }
             }
         } label: { chip(store.settings.store.platform.title, symbol: store.settings.store.platform.symbol) }
-        .accessibilityLabel("应用平台：\(store.settings.store.platform.title)")
+        .accessibilityLabel(String(localized: "应用平台：\(store.settings.store.platform.title)"))
     }
 }
 
@@ -177,11 +197,11 @@ struct AccountMenuButton: View {
                     }
                 }
             }
-            Button("账号与设置", systemImage: "person.crop.circle") { store.tab = 3 }
+            Button(String(localized: "账号与设置"), systemImage: "person.crop.circle") { store.tab = 3 }
         } label: {
             AccountAvatar(account: apple.active, size: 32).frame(minWidth: 44, minHeight: 44)
         }
-        .accessibilityLabel("切换或管理账号")
+        .accessibilityLabel(String(localized: "切换或管理账号"))
     }
 }
 

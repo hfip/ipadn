@@ -7,14 +7,14 @@ final class AppIconService: ObservableObject {
     enum Choice: String, CaseIterable, Identifiable {
         case dimensional, flat
         var id: String { rawValue }
-        var title: String { self == .dimensional ? "立体图标" : "扁平图标" }
+        var title: String { self == .dimensional ? String(localized: "立体图标") : String(localized: "扁平图标") }
         var preview: String { self == .dimensional ? "BrandMark" : "FlatBrandMark" }
     }
     /// Light or dark icon: following the system appearance (iOS 18), or fixed.
     enum Theme: String, CaseIterable, Identifiable {
         case automatic, light, dark
         var id: String { rawValue }
-        var title: String { self == .automatic ? "跟随系统" : self == .light ? "浅色" : "深色" }
+        var title: String { self == .automatic ? String(localized: "跟随系统") : self == .light ? String(localized: "浅色") : String(localized: "深色") }
     }
     struct Selection: Equatable {
         var style: Choice
@@ -115,17 +115,17 @@ final class AppIconService: ObservableObject {
     }
 
     private func apply(_ choice: Selection) async throws {
-        guard !changing else { throw ToolError.message("正在等待系统处理图标切换") }
+        guard !changing else { throw ToolError.message(String(localized: "正在等待系统处理图标切换")) }
         guard choice != current else { return }
-        guard supported else { throw ToolError.message("当前设备不支持更换图标") }
+        guard supported else { throw ToolError.message(String(localized: "当前设备不支持更换图标")) }
         guard simulatesChanges || UIApplication.shared.applicationState == .active else {
-            throw ToolError.message("请回到应用前台再切换图标")
+            throw ToolError.message(String(localized: "请回到应用前台再切换图标"))
         }
         changing = true
         defer { changing = false }
         if simulatesChanges { current = choice; return }
         guard choice.alternateName.map({ Self.bundledAlternateIsAvailable($0) }) ?? true else {
-            throw ToolError.message("当前安装的 iPadn 缺少图标资源，无法更换图标")
+            throw ToolError.message(String(localized: "当前安装的 iPadn 缺少图标资源，无法更换图标"))
         }
         reconciliation?.cancel()
         reconciliation = nil
@@ -157,11 +157,11 @@ final class AppIconService: ObservableObject {
             // No final answer yet: keep watching alternateIconName instead of
             // inventing a failure; the selection updates when the system does.
             awaitingSystem = choice
-            statusHint = "正在更换图标…"
+            statusHint = String(localized: "正在更换图标…")
             beginReconciliation()
             return
         }
-        throw ToolError.message("图标更换失败，请稍后重试")
+        throw ToolError.message(String(localized: "图标更换失败，请稍后重试"))
     }
 
     private struct IconRequestTimeout: Error {}
@@ -198,7 +198,7 @@ final class AppIconService: ObservableObject {
             self.awaitingSystem = nil
             // Show what the system reports from now on, not an earlier choice.
             Self.confirmedThisLaunch = nil
-            self.statusHint = "系统未确认更换，请回到主屏幕查看"
+            self.statusHint = String(localized: "系统未确认更换，请回到主屏幕查看")
             self.refresh()
         }
     }

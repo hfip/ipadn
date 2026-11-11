@@ -80,7 +80,7 @@ struct SettingsView: View {
                         .accessibilityIdentifier("settings.icon." + choice.rawValue)
                         .accessibilityAddTraits(icons.selected == choice ? .isSelected : [])
                         .accessibilityRemoveTraits(icons.selected == choice ? [] : .isSelected)
-                        .accessibilityValue(icons.selected == choice ? "已选中" : "未选中")
+                        .accessibilityValue(icons.selected == choice ? String(localized: "已选中") : String(localized: "未选中"))
                 }
                 Picker("图标主题", selection: Binding(get: { icons.theme }, set: { theme in
                     Task {
@@ -111,12 +111,12 @@ struct SettingsView: View {
                                 Text(source.urlTemplate).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                             }
                             Spacer()
-                            Text(source.enabled ? "已启用" : "已停用").font(.caption).foregroundStyle(.secondary)
-                            Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+                            Text(source.enabled ? String(localized: "已启用") : String(localized: "已停用")).font(.caption).foregroundStyle(.secondary)
+                            Image(systemName: "chevron.forward").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
                         }
                     }
                     .accessibilityIdentifier("settings.source." + source.name)
-                    .revealDelete(id: "source." + source.id.uuidString, title: "移除") {
+                    .revealDelete(id: "source." + source.id.uuidString, title: String(localized: "移除")) {
                         let id = source.id
                         withAnimation { store.settings.versionSources.removeAll { $0.id == id } }
                     }
@@ -129,7 +129,7 @@ struct SettingsView: View {
             }
             Section {
                 Toggle("加快重复下载", isOn: $store.settings.useSignerCache)
-                Button("清除缓存") { store.signer.clearCache(); store.infoMessage = "已清除缓存" }
+                Button("清除缓存") { store.signer.clearCache(); store.infoMessage = String(localized: "已清除缓存") }
             } header: { Text("性能") } footer: {
                 Text("缓存仅在本次运行期间保留。")
             }
@@ -145,8 +145,9 @@ struct SettingsView: View {
                         .accessibilityIdentifier("settings.credentials")
                 }
             } footer: {
-                Text(store.settings.proMode ? "可以在下载任务详情中浏览安装包内容，并查看账号令牌和设备标识。"
-                     : "打开后可以浏览安装包内容、查看账号令牌和修改设备标识。")
+                Text(store.settings.proMode
+                     ? String(localized: "可以在下载任务详情中浏览安装包内容，并查看账号令牌和设备标识。")
+                     : String(localized: "打开后可以浏览安装包内容、查看账号令牌和修改设备标识。"))
             }
             Section("维护") {
                 NavigationLink { StorageView() } label: { Label("存储空间", systemImage: "internaldrive") }
@@ -163,7 +164,7 @@ struct SettingsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 64 * UX.iconCorner, style: .continuous))
                     .environment(\.colorScheme, iconScheme)
                     .accessibilityHidden(true)
-                Text("iPadn " + (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")).font(.headline)
+                Text("iPadn \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")").font(.headline)
                 Text("搜索、下载和管理你拥有许可的应用安装包，支持 iPhone、iPad、Apple TV 与 Mac。")
                     .font(.footnote).foregroundStyle(.secondary)
                 if let update = store.appUpdate {
@@ -176,8 +177,8 @@ struct SettingsView: View {
                 Button {
                     Task {
                         let reached = await store.checkAppUpdate(force: true)
-                        if !reached { store.errorMessage = "暂时无法检查更新，请稍后重试。" }
-                        else if store.appUpdate == nil { store.infoMessage = "已是最新版本" }
+                        if !reached { store.errorMessage = String(localized: "暂时无法检查更新，请稍后重试。") }
+                        else if store.appUpdate == nil { store.infoMessage = String(localized: "已是最新版本") }
                     }
                 } label: {
                     HStack {
@@ -206,9 +207,12 @@ struct SettingsView: View {
             }
         }
         .sheet(item: $share) { file in ShareSheet(items: [file.url]) }
-        .actionConfirmation(isPresented: $resetSettings, title: "恢复默认设置？", message: "账号、已下载的安装包和已购记录不受影响。", confirmTitle: "恢复默认设置") { store.settings = ToolSettings() }
-        .actionConfirmation(isPresented: $clearCache, title: "清除历史版本缓存？", confirmTitle: "清除缓存") {
-            Task { do { try await store.versions.clearCache(); store.infoMessage = "已清除缓存" } catch { store.errorMessage = error.localizedDescription } }
+        .actionConfirmation(isPresented: $resetSettings, title: String(localized: "恢复默认设置？"),
+                            message: String(localized: "账号、已下载的安装包和已购记录不受影响。"),
+                            confirmTitle: String(localized: "恢复默认设置")) { store.settings = ToolSettings() }
+        .actionConfirmation(isPresented: $clearCache, title: String(localized: "清除历史版本缓存？"),
+                            confirmTitle: String(localized: "清除缓存")) {
+            Task { do { try await store.versions.clearCache(); store.infoMessage = String(localized: "已清除缓存") } catch { store.errorMessage = error.localizedDescription } }
         }
     }
 }
@@ -227,7 +231,8 @@ struct VersionSourceEditor: View {
                 Toggle("倒序显示", isOn: $source.reverse)
             }
             Section("接口格式") {
-                Text("[{\"external_identifier\":\"123\",\"bundle_version\":\"1.0\"}]")
+                // A wire-format sample: never translated.
+                Text(verbatim: "[{\"external_identifier\":\"123\",\"bundle_version\":\"1.0\"}]")
                     .font(.caption.monospaced()).textSelection(.enabled)
                 Text("若返回 {\"data\":[…]}，列表容器键填写 data。")
                     .font(.caption).foregroundStyle(.secondary)
@@ -239,7 +244,7 @@ struct VersionSourceEditor: View {
 struct AddVersionSourceView: View {
     @EnvironmentObject private var store: ToolStore
     @Environment(\.dismiss) private var dismiss
-    @State private var source = VersionSource(name: "新来源", urlTemplate: "https://", containerKey: "data", reverse: false)
+    @State private var source = VersionSource(name: String(localized: "新来源"), urlTemplate: "https://", containerKey: "data", reverse: false)
     @State private var error: String?
     var body: some View {
         NavigationStack {
@@ -251,7 +256,7 @@ struct AddVersionSourceView: View {
                             guard !source.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
                                   source.urlTemplate.contains("{id}"),
                                   let url = URL(string: source.urlTemplate.replacingOccurrences(of: "{id}", with: "123")),
-                                  url.scheme == "https", url.host != nil else { error = "请填写名称，以及包含 {id} 的 https 接口地址"; return }
+                                  url.scheme == "https", url.host != nil else { error = String(localized: "请填写名称，以及包含 {id} 的 https 接口地址"); return }
                             store.settings.versionSources.append(source); dismiss()
                         }
                     }

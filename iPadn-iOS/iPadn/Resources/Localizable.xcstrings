@@ -1,0 +1,1342 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+    "%lld 个结果": {
+      "localizations": {
+        "ar": {
+          "variations": {
+            "plural": {
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "لا نتائج"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "نتيجة واحدة"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "نتيجتان"
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld نتائج"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld نتيجة"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld نتيجة"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Apple 账号需要重新登录，请到「账号」页面更新密码。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يلزم تسجيل الدخول مجدداً إلى حساب Apple. حدّث كلمة السر من صفحة «الحساب»."
+          }
+        }
+      }
+    },
+    "iPadn %@ 可以更新": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يتوفّر تحديث لـ iPadn %@"
+          }
+        }
+      }
+    },
+    "“%@”没有匹配的应用。试试 App ID、App Store 链接或其他地区。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد تطبيقات مطابقة لـ «%@». جرّب App ID أو رابط App Store أو منطقة أخرى."
+          }
+        }
+      }
+    },
+    "下载": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التنزيلات"
+          }
+        }
+      }
+    },
+    "下载完成通知": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إشعار عند اكتمال التنزيل"
+          }
+        }
+      }
+    },
+    "专业模式": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الوضع المتقدّم"
+          }
+        }
+      }
+    },
+    "中国大陆": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصين"
+          }
+        }
+      }
+    },
+    "倒序显示": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عرض تنازلي"
+          }
+        }
+      }
+    },
+    "关注": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متابعة"
+          }
+        }
+      }
+    },
+    "关注应用提醒": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنبيهات التطبيقات المتابَعة"
+          }
+        }
+      }
+    },
+    "关注的应用有新版本、降价、限免或下架时通知你。后台检查的时间由系统决定，打开 iPadn 时也会检查。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ننبّهك عندما يصدر إصدار جديد لتطبيق تتابعه أو ينخفض سعره أو يتوفّر مجاناً لفترة محدودة أو يُزال من المتجر. يحدّد النظام وقت الفحص في الخلفية، ويجري الفحص أيضاً عند فتح iPadn."
+          }
+        }
+      }
+    },
+    "兼容下载模式": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وضع التنزيل المتوافق"
+          }
+        }
+      }
+    },
+    "切换或管理账号": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تبديل الحساب أو إدارته"
+          }
+        }
+      }
+    },
+    "切换账号": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تبديل الحساب"
+          }
+        }
+      }
+    },
+    "列表字段名（可留空）": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسم حقل القائمة (اختياري)"
+          }
+        }
+      }
+    },
+    "刷新": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحديث"
+          }
+        }
+      }
+    },
+    "加快重复下载": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تسريع التنزيلات المتكررة"
+          }
+        }
+      }
+    },
+    "加拿大": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كندا"
+          }
+        }
+      }
+    },
+    "历史版本来源": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصادر الإصدارات السابقة"
+          }
+        }
+      }
+    },
+    "取消": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء"
+          }
+        }
+      }
+    },
+    "取消关注": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء المتابعة"
+          }
+        }
+      }
+    },
+    "可以在下载任务详情中浏览安装包内容，并查看账号令牌和设备标识。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكنك تصفّح محتويات حزمة التثبيت من تفاصيل مهمة التنزيل، وعرض رمز الحساب ومعرّفات الجهاز."
+          }
+        }
+      }
+    },
+    "可能支持 Apple TV": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قد يدعم Apple TV"
+          }
+        }
+      }
+    },
+    "台湾": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تايوان"
+          }
+        }
+      }
+    },
+    "同时下载：%lld": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التنزيلات المتزامنة: %lld"
+          }
+        }
+      }
+    },
+    "启用": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تفعيل"
+          }
+        }
+      }
+    },
+    "商店地区": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "منطقة المتجر"
+          }
+        }
+      }
+    },
+    "商店暂时无法返回结果（%lld），请稍后重试或更换地区。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر على المتجر إرجاع النتائج (%lld). أعد المحاولة لاحقاً أو غيّر المنطقة."
+          }
+        }
+      }
+    },
+    "商店暂时无法返回结果，请稍后重试或更换地区。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر على المتجر إرجاع النتائج. أعد المحاولة لاحقاً أو غيّر المنطقة."
+          }
+        }
+      }
+    },
+    "图标主题": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمط الأيقونة"
+          }
+        }
+      }
+    },
+    "图标更换失败，请稍后重试": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تغيير الأيقونة. أعد المحاولة لاحقاً."
+          }
+        }
+      }
+    },
+    "图标未更改": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم تتغيّر الأيقونة"
+          }
+        }
+      }
+    },
+    "外观": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المظهر"
+          }
+        }
+      }
+    },
+    "好": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حسناً"
+          }
+        }
+      }
+    },
+    "如在企业证书重签或特定环境下遇到“无法创建文件”报错，请开启兼容下载模式（使用应用前台直接下载，下载时请保持应用在前台）。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا ظهر خطأ «تعذّر إنشاء الملف» بعد إعادة التوقيع بشهادة مؤسسة أو في بيئات معيّنة، ففعّل وضع التنزيل المتوافق (ينزّل التطبيق مباشرةً في المقدمة، فأبقِه مفتوحاً أثناء التنزيل)."
+          }
+        }
+      }
+    },
+    "存储空间": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مساحة التخزين"
+          }
+        }
+      }
+    },
+    "安装设置": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات التثبيت"
+          }
+        }
+      }
+    },
+    "导出诊断信息": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصدير معلومات التشخيص"
+          }
+        }
+      }
+    },
+    "已停用": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متوقف"
+          }
+        }
+      }
+    },
+    "已启用": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفعَّل"
+          }
+        }
+      }
+    },
+    "已是最新版本": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لديك أحدث إصدار"
+          }
+        }
+      }
+    },
+    "已清除缓存": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم مسح ذاكرة التخزين المؤقت"
+          }
+        }
+      }
+    },
+    "已购": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المشتريات"
+          }
+        }
+      }
+    },
+    "已选中": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محدَّد"
+          }
+        }
+      }
+    },
+    "应用名称、App ID 或链接": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسم التطبيق أو App ID أو الرابط"
+          }
+        }
+      }
+    },
+    "应用图标": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أيقونة التطبيق"
+          }
+        }
+      }
+    },
+    "应用平台": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المنصة"
+          }
+        }
+      }
+    },
+    "应用平台：%@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المنصة: %@"
+          }
+        }
+      }
+    },
+    "当前安装的 iPadn 缺少图标资源，无法更换图标": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخة iPadn المثبَّتة تفتقد موارد الأيقونات، لذا يتعذّر تغييرها"
+          }
+        }
+      }
+    },
+    "当前设备不支持更换图标": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا الجهاز لا يدعم تغيير الأيقونة"
+          }
+        }
+      }
+    },
+    "当前设备不支持更换图标。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا الجهاز لا يدعم تغيير الأيقونة."
+          }
+        }
+      }
+    },
+    "德国": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ألمانيا"
+          }
+        }
+      }
+    },
+    "性能": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأداء"
+          }
+        }
+      }
+    },
+    "恢复默认设置": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استعادة الإعدادات الافتراضية"
+          }
+        }
+      }
+    },
+    "恢复默认设置？": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استعادة الإعدادات الافتراضية؟"
+          }
+        }
+      }
+    },
+    "扁平图标": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أيقونة مسطّحة"
+          }
+        }
+      }
+    },
+    "打开后可以浏览安装包内容、查看账号令牌和修改设备标识。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند تفعيله يمكنك تصفّح محتويات حزمة التثبيت وعرض رمز الحساب وتعديل معرّفات الجهاز."
+          }
+        }
+      }
+    },
+    "接口地址，用 {id} 代表 App ID": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عنوان الواجهة، حيث يمثّل {id} معرّف التطبيق"
+          }
+        }
+      }
+    },
+    "接口格式": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنسيق الواجهة"
+          }
+        }
+      }
+    },
+    "搜索": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بحث"
+          }
+        }
+      }
+    },
+    "搜索、下载和管理你拥有许可的应用安装包，支持 iPhone、iPad、Apple TV 与 Mac。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابحث عن حزم التطبيقات المرخّصة لك ونزّلها وأدرها، مع دعم iPhone وiPad وApple TV وMac."
+          }
+        }
+      }
+    },
+    "搜索与外观": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "البحث والمظهر"
+          }
+        }
+      }
+    },
+    "搜索应用": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "البحث عن تطبيقات"
+          }
+        }
+      }
+    },
+    "搜索结果数量": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عدد نتائج البحث"
+          }
+        }
+      }
+    },
+    "撤销": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تراجع"
+          }
+        }
+      }
+    },
+    "操作未完成": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم تكتمل العملية"
+          }
+        }
+      }
+    },
+    "新加坡": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سنغافورة"
+          }
+        }
+      }
+    },
+    "新来源": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مصدر جديد"
+          }
+        }
+      }
+    },
+    "新版本提醒": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تنبيهات الإصدارات الجديدة"
+          }
+        }
+      }
+    },
+    "无法添加": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّرت الإضافة"
+          }
+        }
+      }
+    },
+    "无结果": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد نتائج"
+          }
+        }
+      }
+    },
+    "日本": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اليابان"
+          }
+        }
+      }
+    },
+    "暂时无法完成搜索，请稍后重试。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر إكمال البحث. أعد المحاولة لاحقاً."
+          }
+        }
+      }
+    },
+    "暂时无法检查更新，请稍后重试。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر التحقّق من التحديثات. أعد المحاولة لاحقاً."
+          }
+        }
+      }
+    },
+    "更多结果": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نتائج إضافية"
+          }
+        }
+      }
+    },
+    "最近搜索": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عمليات البحث الأخيرة"
+          }
+        }
+      }
+    },
+    "未选中": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير محدَّد"
+          }
+        }
+      }
+    },
+    "来源名称": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسم المصدر"
+          }
+        }
+      }
+    },
+    "来源设置": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعدادات المصدر"
+          }
+        }
+      }
+    },
+    "检查更新": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحقّق من التحديثات"
+          }
+        }
+      }
+    },
+    "正在刷新": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ التحديث"
+          }
+        }
+      }
+    },
+    "正在搜索…": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ البحث…"
+          }
+        }
+      }
+    },
+    "正在更换图标…": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ تغيير الأيقونة…"
+          }
+        }
+      }
+    },
+    "正在等待系统处理图标切换": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ينتظر النظام إتمام تغيير الأيقونة"
+          }
+        }
+      }
+    },
+    "法国": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فرنسا"
+          }
+        }
+      }
+    },
+    "浅色": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فاتح"
+          }
+        }
+      }
+    },
+    "深色": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "داكن"
+          }
+        }
+      }
+    },
+    "添加": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة"
+          }
+        }
+      }
+    },
+    "添加版本来源": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة مصدر إصدارات"
+          }
+        }
+      }
+    },
+    "清空输入": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح الإدخال"
+          }
+        }
+      }
+    },
+    "清除": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح"
+          }
+        }
+      }
+    },
+    "清除历史版本缓存": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح ذاكرة الإصدارات السابقة"
+          }
+        }
+      }
+    },
+    "清除历史版本缓存？": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح ذاكرة الإصدارات السابقة؟"
+          }
+        }
+      }
+    },
+    "清除搜索": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح البحث"
+          }
+        }
+      }
+    },
+    "清除最近搜索？": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح عمليات البحث الأخيرة؟"
+          }
+        }
+      }
+    },
+    "清除缓存": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسح ذاكرة التخزين المؤقت"
+          }
+        }
+      }
+    },
+    "澳大利亚": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أستراليا"
+          }
+        }
+      }
+    },
+    "点按关闭提示": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر لإغلاق التنبيه"
+          }
+        }
+      }
+    },
+    "用于查询应用的历史版本。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُستخدم للبحث عن الإصدارات السابقة للتطبيقات."
+          }
+        }
+      }
+    },
+    "知道了": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حسناً"
+          }
+        }
+      }
+    },
+    "移除": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إزالة"
+          }
+        }
+      }
+    },
+    "立体图标": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أيقونة ثلاثية الأبعاد"
+          }
+        }
+      }
+    },
+    "等待任务上限：%lld": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحد الأقصى للمهام المنتظرة: %lld"
+          }
+        }
+      }
+    },
+    "等待系统同步": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بانتظار مزامنة النظام"
+          }
+        }
+      }
+    },
+    "系统未确认更换，请回到主屏幕查看": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يؤكّد النظام التغيير. تحقّق من الشاشة الرئيسية."
+          }
+        }
+      }
+    },
+    "维护": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصيانة"
+          }
+        }
+      }
+    },
+    "缓存仅在本次运行期间保留。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تبقى ذاكرة التخزين المؤقت خلال هذه الجلسة فقط."
+          }
+        }
+      }
+    },
+    "网络连接暂时不可用，请检查网络后重试。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر الاتصال بالشبكة. تحقق من اتصالك ثم أعد المحاولة."
+          }
+        }
+      }
+    },
+    "美国": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الولايات المتحدة"
+          }
+        }
+      }
+    },
+    "自动检查更新": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحقّق التلقائي من التحديثات"
+          }
+        }
+      }
+    },
+    "若返回 {\"data\":[…]}，列表容器键填写 data。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إذا كان الرد بالشكل {\"data\":[…]} فاكتب data في حقل حاوية القائمة."
+          }
+        }
+      }
+    },
+    "英国": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المملكة المتحدة"
+          }
+        }
+      }
+    },
+    "获取": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احصل"
+          }
+        }
+      }
+    },
+    "获取 %@": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احصل على %@"
+          }
+        }
+      }
+    },
+    "设置": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإعدادات"
+          }
+        }
+      }
+    },
+    "请到「账号」中重新登录 Apple 账号后再试。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سجّل الدخول إلى حساب Apple من «الحساب» ثم أعد المحاولة."
+          }
+        }
+      }
+    },
+    "请回到应用前台再切换图标": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عُد إلى التطبيق ثم غيّر الأيقونة"
+          }
+        }
+      }
+    },
+    "请填写名称，以及包含 {id} 的 https 接口地址": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أدخل اسماً وعنوان واجهة https يتضمّن {id}"
+          }
+        }
+      }
+    },
+    "账号": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحساب"
+          }
+        }
+      }
+    },
+    "账号、已下载的安装包和已购记录不受影响。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لن تتأثر الحسابات ولا حزم التثبيت التي نزّلتها ولا سجلات الشراء."
+          }
+        }
+      }
+    },
+    "账号与设备标识": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحساب ومعرّفات الجهاز"
+          }
+        }
+      }
+    },
+    "账号与设置": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحساب والإعدادات"
+          }
+        }
+      }
+    },
+    "跟随系统": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حسب النظام"
+          }
+        }
+      }
+    },
+    "重试": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعادة المحاولة"
+          }
+        }
+      }
+    },
+    "韩国": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كوريا الجنوبية"
+          }
+        }
+      }
+    },
+    "项目与更新": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المشروع والتحديثات"
+          }
+        }
+      }
+    },
+    "香港": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هونغ كونغ"
+          }
+        }
+      }
+    },
+    "验证码，已输入 %lld 位": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رمز التحقّق، تم إدخال %lld من الأرقام"
+          }
+        }
+      }
+    },
+    "默认使用深色图标。「跟随系统」会随主屏幕的浅色、深色和着色外观切换（iOS 18 及更新版本），也可以固定使用浅色图标。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأيقونة الداكنة هي الافتراضية. يبدّل «حسب النظام» بين المظهر الفاتح والداكن والملوَّن لشاشة التشغيل الرئيسية (iOS 18 فأحدث)، ويمكنك أيضاً تثبيت الأيقونة الفاتحة."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

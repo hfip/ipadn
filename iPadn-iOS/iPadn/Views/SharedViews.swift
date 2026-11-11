@@ -142,7 +142,9 @@ struct RootView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private let destinations = [("搜索", "magnifyingglass"), ("下载", "arrow.down.circle.fill"), ("已购", "bag.fill"), ("账号", "person.crop.circle.fill")]
+    /// Sidebar entries use the catalog key directly, so the iPad column and the
+    /// compact tab bar always show the same language.
+    private let destinations: [(LocalizedStringKey, String)] = [("搜索", "magnifyingglass"), ("下载", "arrow.down.circle.fill"), ("已购", "bag.fill"), ("账号", "person.crop.circle.fill")]
     var body: some View {
         Group {
             if sizeClass == .regular {

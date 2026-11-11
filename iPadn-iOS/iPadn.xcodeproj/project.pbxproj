@@ -569,6 +569,16 @@
 			isa = PBXBuildFile;
 			fileRef = 1CDCE2D7B842ECAE64295E63;
 		};
+		03D6FDAD4474AB42F9FEA974 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json;
+			path = "Resources/Localizable.xcstrings";
+			sourceTree = "<group>";
+		};
+		C264D09531E6FF7826C42F20 = {
+			isa = PBXBuildFile;
+			fileRef = 03D6FDAD4474AB42F9FEA974;
+		};
 		B16C09C8BC30D4CC7B42836D = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -969,6 +979,7 @@
 				8FEB83A29956DE0B59952846,
 				8D670B021DC9E9A81AD94FB4,
 				1CDCE2D7B842ECAE64295E63,
+				03D6FDAD4474AB42F9FEA974,
 				B16C09C8BC30D4CC7B42836D,
 				07498F436E837AD5A8268353,
 				870DDB71219A07952B19FBC0,
@@ -1099,6 +1110,7 @@
 				FE8AD461736E2C3E2C8BE36E,
 				FE7CC9734AD8010D74C8E69A,
 				B03D1A024E90C64DA4480E67,
+				C264D09531E6FF7826C42F20,
 				5D0F67C75A14F5F9E05AFB4A,
 				C803CD311DF260E5BC8296F3,
 				060DF06315B22D1494FBA5C1,
@@ -1274,6 +1286,8 @@
 					"$(inherited)",
 					"$(IPADN_MACPKG_LDFLAGS)",
 				);
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
@@ -1309,6 +1323,8 @@
 					"$(inherited)",
 					"$(IPADN_MACPKG_LDFLAGS)",
 				);
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
@@ -1547,6 +1563,7 @@
 			developmentRegion = "zh-Hans";
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				ar,
 				"zh-Hans",
 				en,
 				Base,

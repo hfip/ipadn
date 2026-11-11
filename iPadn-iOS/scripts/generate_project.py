@@ -37,7 +37,7 @@ for path in sorted((ROOT / "iPadn").rglob("*.swift")):
     app_files.append(reference)
     sources.append(add("Build/" + relative, "PBXBuildFile", fileRef=reference))
 resources = []
-for path, file_type in [("Resources/SAPRuntime", "folder"), ("Resources/Assets.xcassets", "folder.assetcatalog"), ("Resources/PrivacyInfo.xcprivacy", "text.xml"), ("Resources/app-name-directory.json", "text.json")]:
+for path, file_type in [("Resources/SAPRuntime", "folder"), ("Resources/Assets.xcassets", "folder.assetcatalog"), ("Resources/Localizable.xcstrings", "text.json"), ("Resources/PrivacyInfo.xcprivacy", "text.xml"), ("Resources/app-name-directory.json", "text.json")]:
     reference = add("File/" + path, "PBXFileReference", lastKnownFileType=file_type, path=path, sourceTree="<group>")
     app_files.append(reference)
     resources.append(add("Build/" + path, "PBXBuildFile", fileRef=reference))
@@ -98,7 +98,9 @@ app_settings = {"PRODUCT_BUNDLE_IDENTIFIER": "app.local.iPadn", "PRODUCT_NAME": 
                 "ENABLE_PREVIEWS": "YES", "SUPPORTS_MACCATALYST": "NO", "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "NO",
                 "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
                 # Empty unless scripts/build_unsigned_ipa.sh built the Mac PKG bridge.
-                "IPADN_MACPKG_LDFLAGS": "", "OTHER_LDFLAGS": ["$(inherited)", "$(IPADN_MACPKG_LDFLAGS)"]}
+                "IPADN_MACPKG_LDFLAGS": "", "OTHER_LDFLAGS": ["$(inherited)", "$(IPADN_MACPKG_LDFLAGS)"],
+                # Localized strings live in a String Catalog; the source language is Chinese.
+                "SWIFT_EMIT_LOC_STRINGS": "YES", "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES"}
 test_settings = {"PRODUCT_BUNDLE_IDENTIFIER": "app.local.iPadnTests", "PRODUCT_NAME": "$(TARGET_NAME)", "CODE_SIGN_STYLE": "Automatic",
                  "DEVELOPMENT_TEAM": "", "TARGETED_DEVICE_FAMILY": "1,2", "GENERATE_INFOPLIST_FILE": "YES",
                  "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/iPadn.app/iPadn", "BUNDLE_LOADER": "$(TEST_HOST)",
@@ -128,7 +130,7 @@ add("UITestTarget", "PBXNativeTarget", buildConfigurationList=ui_configs, buildP
 project_id = add("Project", "PBXProject", attributes={"BuildIndependentTargetsInParallel": "1", "LastUpgradeCheck": "1600",
     "TargetAttributes": {app_id: {"CreatedOnToolsVersion": "16.0"}, test_id: {"CreatedOnToolsVersion": "16.0", "TestTargetID": app_id}}},
     buildConfigurationList=project_configs, compatibilityVersion="Xcode 14.0", developmentRegion="zh-Hans",
-    hasScannedForEncodings="0", knownRegions=["zh-Hans", "en", "Base"], mainGroup=root_group, productRefGroup=products,
+    hasScannedForEncodings="0", knownRegions=["ar", "zh-Hans", "en", "Base"], mainGroup=root_group, productRefGroup=products,
     projectDirPath="", projectRoot="", targets=[app_id, test_id, ui_id], packageReferences=[package])
 
 def render(value, indent=0):

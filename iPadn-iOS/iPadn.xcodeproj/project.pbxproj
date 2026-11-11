@@ -571,7 +571,7 @@
 		};
 		03D6FDAD4474AB42F9FEA974 = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.json;
+			lastKnownFileType = text.json.xcstrings;
 			path = "Resources/Localizable.xcstrings";
 			sourceTree = "<group>";
 		};
@@ -581,7 +581,7 @@
 		};
 		0DCDD6B6150838BA6D7A2C9C = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.json;
+			lastKnownFileType = text.json.xcstrings;
 			path = "Resources/InfoPlist.xcstrings";
 			sourceTree = "<group>";
 		};

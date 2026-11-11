@@ -29,12 +29,12 @@ enum WatchChange: Codable, Hashable {
     /// A short tag for lists.
     var tag: String {
         switch self {
-        case .newVersion: return "新版本"
-        case .priceDrop: return "降价"
-        case .free: return "限免"
-        case .priceRise: return "涨价"
-        case .delisted: return "已下架"
-        case .relisted: return "重新上架"
+        case .newVersion: return String(localized: "新版本")
+        case .priceDrop: return String(localized: "降价")
+        case .free: return String(localized: "限免")
+        case .priceRise: return String(localized: "涨价")
+        case .delisted: return String(localized: "已下架")
+        case .relisted: return String(localized: "重新上架")
         }
     }
 }
@@ -111,16 +111,16 @@ enum WatchService {
 
     private static func same(_ a: Double, _ b: Double) -> Bool { abs(a - b) < 0.000_1 }
 
-    /// "免费" for zero, else the amount in its currency ("¥18", "$2.99").
+    /// String(localized: "免费") for zero, else the amount in its currency ("¥18", "$2.99").
     static func format(_ price: Double, currency: String) -> String {
-        if price == 0 { return "免费" }
+        if price == 0 { return String(localized: "免费") }
         let whole = price.rounded() == price
         return formatters.withLock { cache in
             let key = currency + (whole ? "|0" : "|2")
             let formatter = cache[key] ?? {
                 let formatter = NumberFormatter()
                 formatter.numberStyle = .currency
-                formatter.locale = Locale(identifier: "zh_CN")
+                formatter.locale = Locale.current
                 if !currency.isEmpty { formatter.currencyCode = currency }
                 formatter.minimumFractionDigits = whole ? 0 : 2
                 formatter.maximumFractionDigits = 2
@@ -136,11 +136,11 @@ enum WatchService {
     /// A sentence for a notification, or nil when the change is not worth one.
     static func message(_ change: WatchChange, currency: String) -> String? {
         switch change {
-        case .newVersion(let version): return "有新版本 \(version)"
-        case .priceDrop(let from, let to): return "降价：\(format(from, currency: currency)) → \(format(to, currency: currency))"
-        case .free(let from): return "限免：原价 \(format(from, currency: currency))，现在免费"
-        case .delisted: return "已从 App Store 下架，获取过的账号仍可下载，建议尽快备份"
-        case .relisted: return "已重新上架"
+        case .newVersion(let version): return String(localized: "有新版本 \(version)")
+        case .priceDrop(let from, let to): return String(localized: "降价：\(format(from, currency: currency)) → \(format(to, currency: currency))")
+        case .free(let from): return String(localized: "限免：原价 \(format(from, currency: currency))，现在免费")
+        case .delisted: return String(localized: "已从 App Store 下架，获取过的账号仍可下载，建议尽快备份")
+        case .relisted: return String(localized: "已重新上架")
         case .priceRise: return nil
         }
     }

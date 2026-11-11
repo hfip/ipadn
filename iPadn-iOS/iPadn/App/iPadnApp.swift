@@ -6,13 +6,13 @@ enum AppContainer {
     static let shared: ToolStore = {
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--visual-preview") {
-            let a = StoreApp(id: "preview-1", name: "像素日记", bundleID: "example.pixel", version: "3.2.1", category: "摄影与录像", size: 128_000_000)
-            let b = StoreApp(id: "preview-2", name: "专注时刻", bundleID: "example.focus", version: "2.8", category: "效率", size: 48_000_000)
-            var jobs = [DownloadJob(app: a, status: .running, downloaded: 74_000_000, expected: 128_000_000), DownloadJob(app: b, status: .paused, downloaded: 12_000_000, expected: 48_000_000), DownloadJob(app: a, status: .completed), DownloadJob(app: b, status: .failed, error: "网络连接已中断，请检查网络后重试。")]
+            let a = StoreApp(id: "preview-1", name: String(localized: "像素日记"), bundleID: "example.pixel", version: "3.2.1", category: String(localized: "摄影与录像"), size: 128_000_000)
+            let b = StoreApp(id: "preview-2", name: String(localized: "专注时刻"), bundleID: "example.focus", version: "2.8", category: String(localized: "效率"), size: 48_000_000)
+            var jobs = [DownloadJob(app: a, status: .running, downloaded: 74_000_000, expected: 128_000_000), DownloadJob(app: b, status: .paused, downloaded: 12_000_000, expected: 48_000_000), DownloadJob(app: a, status: .completed), DownloadJob(app: b, status: .failed, error: String(localized: "网络连接已中断，请检查网络后重试。"))]
             if let argument = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--stress-records=") }),
                let count = Int(argument.dropFirst("--stress-records=".count)), [100, 500, 1000].contains(count) {
                 jobs = (0..<count).map { index in
-                    DownloadJob(app: StoreApp(id: "stress-\(index)", name: "测试安装包 \(index)", bundleID: "example.stress.\(index)", version: "1.0"), status: .paused)
+                    DownloadJob(app: StoreApp(id: "stress-\(index)", name: String(localized: "测试安装包 \(index)"), bundleID: "example.stress.\(index)", version: "1.0"), status: .paused)
                 }
             }
             let store = ToolStore(downloadManager: DownloadManager(previewJobs: jobs))
@@ -22,7 +22,7 @@ enum AppContainer {
             if ProcessInfo.processInfo.arguments.contains("--accounts") { store.prepareAccountPreview(); store.tab = 3 }
             if ProcessInfo.processInfo.arguments.contains("--purchased") { store.prepareAccountPreview(); store.tab = 2 }
             if ProcessInfo.processInfo.arguments.contains("--archive") { store.prepareArchivePreview() }
-            if ProcessInfo.processInfo.arguments.contains("--notice-preview") { store.infoMessage = "已复制到剪贴板" }
+            if ProcessInfo.processInfo.arguments.contains("--notice-preview") { store.infoMessage = String(localized: "已复制到剪贴板") }
             return store
         }
         #endif

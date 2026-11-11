@@ -21,10 +21,10 @@ enum StoreRegions {
 
     static func name(_ code: String) -> String { names[code] ?? code }
     private static let names: [String: String] = {
-        let locale = Locale(identifier: "zh_CN")
+        let locale = Locale.current
         return Dictionary(uniqueKeysWithValues: codes.map { ($0, locale.localizedString(forRegionCode: $0) ?? $0) })
     }()
-    /// All storefronts in the order of their Chinese names.
+    /// All storefronts in the order of their names in the current language.
     static let byName: [String] = codes.sorted { name($0).localizedStandardCompare(name($1)) == .orderedAscending }
     static func flag(_ code: String) -> String {
         code.uppercased().unicodeScalars.compactMap { UnicodeScalar(127_397 + $0.value) }.map(String.init).joined()
@@ -453,7 +453,7 @@ enum ReleaseNotesService {
         return notes
     }
 
-    /// "Version 1.2.3", "版本 1.2.3" → "1.2.3".
+    /// "Version 1.2.3", String(localized: "版本 1.2.3") → "1.2.3".
     static func version(in subtitle: String) -> String? {
         let token = subtitle.split(whereSeparator: { $0.isWhitespace }).last.map(String.init) ?? subtitle
         let trimmed = token.trimmingCharacters(in: CharacterSet(charactersIn: "0123456789.").inverted)

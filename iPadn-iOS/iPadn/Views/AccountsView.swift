@@ -62,7 +62,7 @@ struct AccountsView: View {
                             }.contentShape(Rectangle())
                         }
                         .buttonStyle(RevealRowButtonStyle())
-                        .accessibilityHint(account.id == apple.activeID ? "当前下载账号" : "切换到此账号")
+                        .accessibilityHint(account.id == apple.activeID ? String(localized: "当前下载账号") : String(localized: "切换到此账号"))
                         .accessibilityIdentifier("account." + account.id)
                         .disabled(store.accountRemoving != nil)
                         .revealDelete(id: "account." + account.id, enabled: store.accountRemoving == nil,
@@ -82,13 +82,13 @@ struct AccountsView: View {
             }
         }
         .animation(UX.motion(reduceMotion), value: apple.accounts.map(\.id))
-        .overlay { if store.accountRemoving != nil { ProgressView("正在移除账号…").padding(20).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16)) } }
-        .toolPage().rootTabBar("账号", headerScrolledAway: headerAway)
-        .actionConfirmation(isPresented: $signingOut, title: "退出当前账号？", message: "账号仍会保留，可随时切换回来。", confirmTitle: "退出登录") { apple.select(nil) }
-        .actionConfirmation(isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), title: "移除账号？", message: (deleting?.id ?? "") + (deleting?.id == apple.activeID ? "\n这是当前下载账号，移除后将退出登录。" : "") + "\n已下载的安装包会保留。", confirmTitle: "移除账号") {
+        .overlay { if store.accountRemoving != nil { ProgressView(String(localized: "正在移除账号…")).padding(20).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16)) } }
+        .toolPage().rootTabBar(String(localized: "账号"), headerScrolledAway: headerAway)
+        .actionConfirmation(isPresented: $signingOut, title: "退出当前账号？", message: String(localized: "账号仍会保留，可随时切换回来。"), confirmTitle: String(localized: "退出登录")) { apple.select(nil) }
+        .actionConfirmation(isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), title: "移除账号？", message: (deleting?.id ?? "") + (deleting?.id == apple.activeID ? String(localized: "\n这是当前下载账号，移除后将退出登录。") : "") + String(localized: "\n已下载的安装包会保留。"), confirmTitle: String(localized: "移除账号")) {
             guard let id = deleting?.id else { return }
             Task {
-                do { try await store.deleteAccount(id); store.infoMessage = "已移除账号" } catch { store.errorMessage = error.localizedDescription }
+                do { try await store.deleteAccount(id); store.infoMessage = String(localized: "已移除账号") } catch { store.errorMessage = error.localizedDescription }
             }
             deleting = nil
         }
@@ -102,7 +102,7 @@ struct VerificationStep: View {
     @Binding var code: String
     let busy: Bool
     let issue: String?
-    var submitTitle = "验证"
+    var submitTitle = String(localized: "验证")
     let submit: () -> Void
     var changeAccount: (() -> Void)? = nil
     @State private var showingHelp = false
@@ -168,7 +168,7 @@ struct LoginView: View {
             VStack(spacing: 22) {
                 if verifying {
                     VerificationStep(account: email.trimmingCharacters(in: .whitespacesAndNewlines), code: $code,
-                                     busy: busy, issue: failure, submitTitle: "验证并登录", submit: submit,
+                                     busy: busy, issue: failure, submitTitle: String(localized: "验证并登录"), submit: submit,
                                      changeAccount: { verifying = false; code = ""; failure = nil; focus = .password })
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 } else {
@@ -194,9 +194,9 @@ struct LoginView: View {
             VStack(spacing: 10) {
                 Image(systemName: "person.crop.circle.fill").font(.system(size: 64)).foregroundStyle(.tint)
                     .accessibilityHidden(true)
-                Text(initialAccountID == nil ? "登录 Apple 账户" : "重新登录").font(.title.weight(.bold))
-                Text(initialAccountID == nil ? "用于同步已购项目和下载你拥有许可的应用。"
-                     : "当前登录已失效，请输入此账号现在使用的密码。")
+                Text(initialAccountID == nil ? String(localized: "登录 Apple 账户") : String(localized: "重新登录")).font(.title.weight(.bold))
+                Text(initialAccountID == nil ? String(localized: "用于同步已购项目和下载你拥有许可的应用。")
+                     : String(localized: "当前登录已失效，请输入此账号现在使用的密码。"))
                     .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
             }.padding(.top, 12)
             VStack(spacing: 0) {
@@ -220,7 +220,7 @@ struct LoginView: View {
             Button(action: submit) {
                 HStack(spacing: 8) {
                     if busy { ProgressView().tint(UX.onAccent) }
-                    Text(busy ? "正在登录…" : "继续")
+                    Text(busy ? String(localized: "正在登录…") : String(localized: "继续"))
                 }.frame(maxWidth: .infinity)
             }
             .buttonStyle(PrimaryButtonStyle()).disabled(!canSubmit)
@@ -241,7 +241,7 @@ struct LoginView: View {
             } catch AppleLoginError.verificationRequired {
                 verifying = true; code = ""
             } catch is CancellationError {
-                failure = "登录已取消，可以重新尝试。"
+                failure = String(localized: "登录已取消，可以重新尝试。")
             } catch {
                 failure = error.localizedDescription
                 code = ""
@@ -265,7 +265,7 @@ struct ExistingAccountVerificationView: View {
         NavigationStack {
             ScrollView {
                 VerificationStep(account: accountID, code: $code, busy: busy, issue: issue,
-                                 submitTitle: "验证并继续", submit: verify)
+                                 submitTitle: String(localized: "验证并继续"), submit: verify)
                     .frame(maxWidth: 460).padding(24).frame(maxWidth: .infinity)
             }
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
@@ -287,7 +287,7 @@ struct ExistingAccountVerificationView: View {
                 onVerified()
                 dismiss()
             } catch is CancellationError {
-                issue = "验证已取消，请重试"
+                issue = String(localized: "验证已取消，请重试")
             } catch {
                 issue = error.localizedDescription
                 code = ""

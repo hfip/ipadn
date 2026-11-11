@@ -20,7 +20,7 @@ enum UX {
     static func success() { UINotificationFeedbackGenerator().notificationOccurred(.success) }
 }
 
-/// Full-width primary action (App Store sign-in "继续" style).
+/// Full-width primary action (App Store sign-in String(localized: "继续") style).
 struct PrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var enabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -45,7 +45,7 @@ struct TintedSwitchToggleStyle: ToggleStyle {
     }
 }
 
-/// App Store "获取 / 打开" capsule. `filled` is the prominent variant.
+/// App Store String(localized: "获取 / 打开") capsule. `filled` is the prominent variant.
 struct CapsuleButtonStyle: ButtonStyle {
     var filled = false
     @Environment(\.isEnabled) private var enabled

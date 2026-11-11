@@ -2,9 +2,9 @@ import Foundation
 
 enum StoreService {
     private static func endpoint(_ base: String, items: [URLQueryItem]) throws -> URL {
-        guard var components = URLComponents(string: base) else { throw ToolError.message("接口地址错误") }
+        guard var components = URLComponents(string: base) else { throw ToolError.message(String(localized: "接口地址错误")) }
         components.queryItems = items
-        guard let url = components.url else { throw ToolError.message("无法构造接口地址") }
+        guard let url = components.url else { throw ToolError.message(String(localized: "无法构造接口地址")) }
         return url
     }
 
@@ -455,7 +455,7 @@ enum StoreService {
                  iconURL: icon(plistString(raw["artworkUrl512"] ?? raw["artworkUrl100"])),
                  description: plistString(raw["description"]), category: localizedGenre(plistString(raw["primaryGenreName"])),
                  size: Int64(plistString(raw["fileSizeBytes"])) ?? 0,
-                 price: plistString(raw["formattedPrice"]).isEmpty ? "免费" : plistString(raw["formattedPrice"]),
+                 price: plistString(raw["formattedPrice"]).isEmpty ? String(localized: "免费") : plistString(raw["formattedPrice"]),
                  priceValue: (raw["price"] as? NSNumber)?.doubleValue,
                  currency: plistString(raw["currency"]).isEmpty ? nil : plistString(raw["currency"]),
                  rating: (raw["averageUserRating"] as? NSNumber)?.doubleValue ?? 0,
@@ -466,14 +466,14 @@ enum StoreService {
     /// The lookup APIs return English genre names in every storefront.
     static func localizedGenre(_ name: String) -> String {
         let names = [
-            "Books": "图书", "Business": "商务", "Developer Tools": "开发者工具", "Education": "教育",
-            "Entertainment": "娱乐", "Finance": "财务", "Food & Drink": "美食佳饮", "Games": "游戏",
-            "Graphics & Design": "图形和设计", "Health & Fitness": "健康健美", "Lifestyle": "生活",
-            "Kids": "儿童", "Magazines & Newspapers": "报刊杂志", "Medical": "医疗", "Music": "音乐",
-            "Navigation": "导航", "News": "新闻", "Photo & Video": "摄影与录像", "Productivity": "效率",
-            "Reference": "参考资料", "Shopping": "购物", "Social Networking": "社交", "Sports": "体育",
-            "Travel": "旅游", "Utilities": "工具", "Weather": "天气", "Stickers": "贴纸",
-            "Video": "视频", "Graphics and Design": "图形和设计"
+            "Books": String(localized: "图书"), "Business": String(localized: "商务"), "Developer Tools": String(localized: "开发者工具"), "Education": String(localized: "教育"),
+            "Entertainment": String(localized: "娱乐"), "Finance": String(localized: "财务"), "Food & Drink": String(localized: "美食佳饮"), "Games": String(localized: "游戏"),
+            "Graphics & Design": String(localized: "图形和设计"), "Health & Fitness": String(localized: "健康健美"), "Lifestyle": String(localized: "生活"),
+            "Kids": String(localized: "儿童"), "Magazines & Newspapers": String(localized: "报刊杂志"), "Medical": String(localized: "医疗"), "Music": String(localized: "音乐"),
+            "Navigation": String(localized: "导航"), "News": String(localized: "新闻"), "Photo & Video": String(localized: "摄影与录像"), "Productivity": String(localized: "效率"),
+            "Reference": String(localized: "参考资料"), "Shopping": String(localized: "购物"), "Social Networking": String(localized: "社交"), "Sports": String(localized: "体育"),
+            "Travel": String(localized: "旅游"), "Utilities": String(localized: "工具"), "Weather": String(localized: "天气"), "Stickers": String(localized: "贴纸"),
+            "Video": String(localized: "视频"), "Graphics and Design": String(localized: "图形和设计")
         ]
         return names[name] ?? name
     }
@@ -621,9 +621,9 @@ actor VersionService {
     private var cacheRevision = UUID()
 
     func thirdParty(_ appID: String, sources: [VersionSource], force: Bool = false) async throws -> [AppVersion] {
-        guard !appID.isEmpty, appID.allSatisfy({ $0.isASCII && $0.isNumber }) else { throw ToolError.message("App ID 必须是数字") }
+        guard !appID.isEmpty, appID.allSatisfy({ $0.isASCII && $0.isNumber }) else { throw ToolError.message(String(localized: "App ID 必须是数字")) }
         let enabled = sources.filter(\.enabled)
-        guard !enabled.isEmpty else { throw ToolError.message("请在设置中启用至少一个版本来源") }
+        guard !enabled.isEmpty else { throw ToolError.message(String(localized: "请在设置中启用至少一个版本来源")) }
         let sourceKey = enabled.map { "\($0.name)|\($0.urlTemplate)|\($0.containerKey)|\($0.reverse)" }.joined(separator: ";")
         let key = appID + "|" + sourceKey
         if !force, let entry = cache[key], Date().timeIntervalSince(entry.savedAt) < 24 * 3600 { return entry.versions }
@@ -654,11 +654,11 @@ actor VersionService {
             if let old = cache[key], Date().timeIntervalSince(old.savedAt) < 7 * 86400 {
                 return old.versions.map {
                     var item = $0
-                    item.source += "（缓存）"
+                    item.source += String(localized: "（缓存）")
                     return item
                 }
             }
-            throw ToolError.message("暂时无法获取历史版本，可打开「从 Apple 获取完整版本列表」或手动输入版本 ID")
+            throw ToolError.message(AppErrorMessage.historyUnavailable)
         }
         if revision == cacheRevision {
             cache = cache.filter { Date().timeIntervalSince($0.value.savedAt) < 7 * 86400 }
@@ -700,18 +700,18 @@ actor VersionService {
     private static func fetch(_ id: String, source: VersionSource) async throws -> [AppVersion] {
         guard source.urlTemplate.contains("{id}"),
               let url = URL(string: source.urlTemplate.replacingOccurrences(of: "{id}", with: id)), url.scheme == "https" else {
-            throw ToolError.message("\(source.name)：接口地址无效")
+            throw ToolError.message(String(localized: "\(source.name)：接口地址无效"))
         }
         let object = try await HTTPClient.shared.json(url)
         let value: Any? = source.containerKey.isEmpty ? object : (object as? [String: Any])?[source.containerKey]
-        guard let records = value as? [[String: Any]] else { throw ToolError.message("\(source.name)：暂时无法读取版本列表") }
+        guard let records = value as? [[String: Any]] else { throw ToolError.message(String(localized: "\(source.name)：暂时无法读取版本列表")) }
         var seen = Set<String>()
         let ordered = source.reverse ? Array(records.suffix(2000).reversed()) : Array(records.prefix(2000))
         return ordered.compactMap { record in
             let id = plistString(record["external_identifier"])
             guard !id.isEmpty, id.allSatisfy({ $0.isASCII && $0.isNumber }), seen.insert(id).inserted else { return nil }
             let version = plistString(record["bundle_version"])
-            return AppVersion(id: id, version: version.isEmpty ? "未知版本" : version, source: source.name)
+            return AppVersion(id: id, version: version.isEmpty ? String(localized: "未知版本") : version, source: source.name)
         }
     }
 

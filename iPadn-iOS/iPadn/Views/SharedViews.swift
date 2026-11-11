@@ -102,7 +102,7 @@ struct AppRow<Accessory: View>: View {
                     MarqueeText(text: detail).foregroundStyle(.secondary)
                 }
                 HStack(spacing: 6) {
-                    if app.isDelisted { TagBadge(text: "已下架", tint: .orange) }
+                    if app.isDelisted { TagBadge(text: String(localized: "已下架"), tint: .orange) }
                     if let badge { TagBadge(text: badge.text, tint: badge.tint) }
                     if app.size > 0 { Text(app.size.byteLabel).font(.caption).foregroundStyle(.tertiary) }
                 }
@@ -144,7 +144,9 @@ struct RootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// Sidebar entries use the catalog key directly, so the iPad column and the
     /// compact tab bar always show the same language.
-    private let destinations: [(LocalizedStringKey, String)] = [("搜索", "magnifyingglass"), ("下载", "arrow.down.circle.fill"), ("已购", "bag.fill"), ("账号", "person.crop.circle.fill")]
+    private let destinations: [(LocalizedStringKey, String)] = [
+        ("搜索", "magnifyingglass"), ("下载", "arrow.down.circle.fill"), ("已购", "bag.fill"), ("账号", "person.crop.circle.fill"),
+    ]
     var body: some View {
         Group {
             if sizeClass == .regular {
@@ -237,7 +239,7 @@ struct RootView: View {
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: store.undoNotice?.id)
         .task(id: store.undoNotice?.id) {
             guard let notice = store.undoNotice else { return }
-            UIAccessibility.post(notification: .announcement, argument: notice.message + "，可以撤销")
+            UIAccessibility.post(notification: .announcement, argument: notice.message + String(localized: "，可以撤销"))
             do { try await Task.sleep(for: .seconds(5)) } catch { return }
             if store.undoNotice?.id == notice.id { store.undoNotice = nil }
         }

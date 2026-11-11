@@ -495,7 +495,7 @@ extension View {
                 RevealCoordinator.shared.active = nil
             }
     }
-    func revealDelete(id: String, enabled: Bool = true, grouping: RevealRowGrouping = .standalone, style: RevealActionStyle = .round, title: String = "删除", action: @escaping () -> Void) -> some View {
+    func revealDelete(id: String, enabled: Bool = true, grouping: RevealRowGrouping = .standalone, style: RevealActionStyle = .round, title: String = String(localized: "删除"), action: @escaping () -> Void) -> some View {
         modifier(RevealDeleteModifier(id: id, enabled: enabled, grouping: grouping, title: title, style: style, action: action))
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)

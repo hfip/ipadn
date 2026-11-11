@@ -3,6 +3,14 @@ import Combine
 import UserNotifications
 import UIKit
 
+/// Typed so callers can stop a batch without matching translated text.
+struct DownloadLimitReached: LocalizedError {
+    var adjustable = false
+    var errorDescription: String? {
+        adjustable ? String(localized: "已达到等待任务上限，可在设置中调整") : String(localized: "已达到等待任务上限")
+    }
+}
+
 /// Progress has its own publisher: a byte counter must not invalidate every list.
 @MainActor
 final class DownloadProgressState: ObservableObject {
@@ -144,7 +152,7 @@ final class DownloadManager: NSObject, ObservableObject {
                     try Self.recoverRemovals(saved)
                     return saved
                 }.value
-            } catch { storageError = "任务文件读取失败；已保留原文件，请先导出诊断再处理。\n" + error.localizedDescription }
+            } catch { storageError = String(localized: "任务文件读取失败；已保留原文件，请先导出诊断再处理。\n") + error.localizedDescription }
             loadingJobs = false
             await restore()
         }
@@ -193,14 +201,14 @@ final class DownloadManager: NSObject, ObservableObject {
             if jobs[index].status == .pausing { jobs[index].status = .paused }
             if jobs[index].status == .completed, fileURL(jobs[index]) == nil {
                 progressPublishedAt.removeValue(forKey: id)
-                jobs[index].status = .failed; jobs[index].error = "本地安装包已被移走或删除"
+                jobs[index].status = .failed; jobs[index].error = String(localized: "本地安装包已被移走或删除")
             }
         }
         restoring = false
         for job in jobs where job.status == .processing {
             if adoptFinishedPackage(job.id) { continue }
             if FileManager.default.fileExists(atPath: LocalResources.stagingURL(job.id).path) { process(job.id) }
-            else { fail(job.id, error: ToolError.message("下载文件丢失，请重试")) }
+            else { fail(job.id, error: ToolError.message(String(localized: "下载文件丢失，请重试"))) }
         }
         discoverLocalFiles()
         persist(); schedule()
@@ -209,11 +217,11 @@ final class DownloadManager: NSObject, ObservableObject {
     func enqueue(_ asset: DownloadAsset) throws {
         guard storageError == nil else { throw ToolError.message(storageError!) }
         guard jobs.filter({ $0.status != .completed && $0.status != .failed }).count < maxQueued else {
-            throw ToolError.message("已达到等待任务上限，可在设置中调整")
+            throw DownloadLimitReached(adjustable: true)
         }
         guard !jobs.contains(where: { $0.app.id == asset.app.id && $0.app.version == asset.app.version &&
             $0.account == asset.account && ![.failed, .completed].contains($0.status) }) else {
-            throw ToolError.message("这个版本已有下载任务")
+            throw ToolError.message(String(localized: "这个版本已有下载任务"))
         }
         var next = jobs
         next.insert(DownloadJob(app: asset.app, asset: asset, sourceURL: asset.url, expected: asset.app.size), at: 0)
@@ -223,14 +231,14 @@ final class DownloadManager: NSObject, ObservableObject {
 
     func enqueueMacInstaller(_ url: URL, for app: StoreApp) throws {
         guard MacInstallerService.directPackage(url) else {
-            throw ToolError.message("仅支持 DMG、PKG 或 ZIP 安装包链接")
+            throw ToolError.message(String(localized: "仅支持 DMG、PKG 或 ZIP 安装包链接"))
         }
         guard storageError == nil else { throw ToolError.message(storageError!) }
         guard jobs.filter({ $0.status != .completed && $0.status != .failed }).count < maxQueued else {
-            throw ToolError.message("已达到等待任务上限")
+            throw DownloadLimitReached()
         }
         guard !jobs.contains(where: { $0.sourceURL == url && ![.completed, .failed].contains($0.status) }) else {
-            throw ToolError.message("此安装包已有下载任务")
+            throw ToolError.message(String(localized: "此安装包已有下载任务"))
         }
         var next = jobs
         next.insert(DownloadJob(app: app, sourceURL: url, packageIconScanned: true,
@@ -246,19 +254,19 @@ final class DownloadManager: NSObject, ObservableObject {
     func enqueueOfficialMacPackage(_ offer: MacPackageOffer, for app: StoreApp) throws {
         if offer.protectedByApple {
             guard MacPackageDecryptor.isAvailable else {
-                throw ToolError.message("当前版本不支持下载此 Mac 安装包")
+                throw ToolError.message(String(localized: "当前版本不支持下载此 Mac 安装包"))
             }
             guard offer.dpInfo != nil, offer.hardwareID.count == 12 else {
-                throw ToolError.message("暂时无法下载 Mac 安装包，请重试")
+                throw ToolError.message(String(localized: "暂时无法下载 Mac 安装包，请重试"))
             }
         }
         guard storageError == nil else { throw ToolError.message(storageError!) }
         guard jobs.filter({ $0.status != .completed && $0.status != .failed }).count < maxQueued else {
-            throw ToolError.message("已达到等待任务上限")
+            throw DownloadLimitReached()
         }
         guard !jobs.contains(where: { $0.sourceURL == offer.downloadURL &&
                                       ![.completed, .failed].contains($0.status) }) else {
-            throw ToolError.message("此安装包已有下载任务")
+            throw ToolError.message(String(localized: "此安装包已有下载任务"))
         }
         var macApp = app
         if !offer.displayVersion.isEmpty { macApp.version = offer.displayVersion }
@@ -276,14 +284,14 @@ final class DownloadManager: NSObject, ObservableObject {
     }
 
     func enqueueURL(_ url: URL) throws {
-        guard url.scheme == "https", url.host != nil, url.user == nil, url.password == nil else { throw ToolError.message("请输入有效的下载链接") }
+        guard url.scheme == "https", url.host != nil, url.user == nil, url.password == nil else { throw ToolError.message(String(localized: "请输入有效的下载链接")) }
         guard storageError == nil else { throw ToolError.message(storageError!) }
         guard jobs.filter({ $0.status != .completed && $0.status != .failed }).count < maxQueued else {
-            throw ToolError.message("已达到等待任务上限，可在设置中调整")
+            throw DownloadLimitReached(adjustable: true)
         }
         let name = url.deletingPathExtension().lastPathComponent
         var next = jobs
-        next.insert(DownloadJob(app: StoreApp(id: UUID().uuidString, name: name.isEmpty ? "导入安装包" : name), sourceURL: url), at: 0)
+        next.insert(DownloadJob(app: StoreApp(id: UUID().uuidString, name: name.isEmpty ? String(localized: "导入安装包") : name), sourceURL: url), at: 0)
         try saveNewJobs(next)
         requestNotifications(); schedule()
     }
@@ -292,7 +300,7 @@ final class DownloadManager: NSObject, ObservableObject {
         guard storageError == nil else { throw ToolError.message(storageError!) }
         guard let index = jobs.firstIndex(where: { $0.id == id }), jobs[index].status == .failed,
               jobs[index].account == asset.account, jobs[index].app.id == asset.app.id else {
-            throw ToolError.message("账号已切换，请重新下载")
+            throw ToolError.message(String(localized: "账号已切换，请重新下载"))
         }
         var next = jobs
         if next[index].error?.contains("无法创建") == true {
@@ -387,7 +395,7 @@ final class DownloadManager: NSObject, ObservableObject {
             // Deleted once processing has stopped (see process()).
             removalAfterCancel.insert(id); cancelProcessing(id); return
         }
-        guard job.status != .processing, job.status != .pausing else { throw ToolError.message("请等待当前文件处理或暂停完成后再删除") }
+        guard job.status != .processing, job.status != .pausing else { throw ToolError.message(String(localized: "请等待当前文件处理或暂停完成后再删除")) }
         let file = fileURL(job)
         let removal = LocalResources.support.appendingPathComponent("\(id.uuidString).removing.ipa")
         if let file { try FileManager.default.moveItem(at: file, to: removal) }
@@ -416,22 +424,22 @@ final class DownloadManager: NSObject, ObservableObject {
     /// aside and roll them back if the task-list write fails. Disk work is serial
     /// with earlier progress saves, and never runs on the main actor.
     func removeBatch(_ ids: Set<UUID>) async throws -> Int {
-        guard removingIDs.isEmpty, !loadingJobs else { throw ToolError.message("正在保存任务，请稍后重试") }
+        guard removingIDs.isEmpty, !loadingJobs else { throw ToolError.message(String(localized: "正在保存任务，请稍后重试")) }
         guard storageError == nil else { throw ToolError.message(storageError!) }
         let selected = jobs.filter { ids.contains($0.id) }
         guard !selected.contains(where: { $0.status == .processing || $0.status == .pausing }) else {
-            throw ToolError.message("请等待当前文件处理或暂停完成后再删除")
+            throw ToolError.message(String(localized: "请等待当前文件处理或暂停完成后再删除"))
         }
         for job in selected where job.status == .running { pause(job.id) }
         let deadline = Date().addingTimeInterval(15)
         while jobs.contains(where: { ids.contains($0.id) && $0.status == .pausing }) {
-            guard Date() < deadline else { throw ToolError.message("暂停下载尚未完成，请稍后重试删除") }
+            guard Date() < deadline else { throw ToolError.message(String(localized: "暂停下载尚未完成，请稍后重试删除")) }
             try await Task.sleep(for: .milliseconds(50))
         }
         try Task.checkCancellation()
-        guard removingIDs.isEmpty else { throw ToolError.message("正在删除任务，请稍后重试") }
+        guard removingIDs.isEmpty else { throw ToolError.message(String(localized: "正在删除任务，请稍后重试")) }
         let targets = jobs.filter { ids.contains($0.id) }
-        guard !targets.contains(where: { $0.status == .processing }) else { throw ToolError.message("任务正在处理，请稍后重试") }
+        guard !targets.contains(where: { $0.status == .processing }) else { throw ToolError.message(String(localized: "任务正在处理，请稍后重试")) }
         let removed = Set(targets.map(\.id))
         guard !removed.isEmpty else { return 0 }
         removingIDs = removed
@@ -675,13 +683,13 @@ final class DownloadManager: NSObject, ObservableObject {
         let total = (try? FileManager.default.attributesOfItem(atPath: LocalResources.stagingURL(id).path)[.size] as? NSNumber)?.int64Value ?? 0
         while !Task.isCancelled {
             if MacPackageDecryptor.currentJob != id {
-                processingDetail[id] = "排队等待处理"
+                processingDetail[id] = String(localized: "排队等待处理")
             } else if let status = MacPackageDecryptor.status() {
                 var text = status.stage.title
                 if status.stage == .decrypting, total > 0 {
                     text += String(format: " %.0f%%", min(100, Double(status.bytes) * 100 / Double(total)))
                 } else if status.stage == .components {
-                    text += "（首次需下载约 47 MB）"
+                    text += String(localized: "（首次需下载约 47 MB）")
                 }
                 processingDetail[id] = text
             }
@@ -722,7 +730,7 @@ final class DownloadManager: NSObject, ObservableObject {
                     guard !self.jobs.contains(where: { $0.localFilename == file.lastPathComponent }) else { continue }
                     self.jobs.append(DownloadJob(app: app, status: .completed, downloaded: app.size, expected: app.size, localFilename: file.lastPathComponent))
                     self.persist()
-                } catch { self.discoveryWarning = "本地 IPA 无法读取，已保留原文件；其他任务可继续使用：\(file.lastPathComponent)\n\(error.localizedDescription)" }
+                } catch { self.discoveryWarning = String(localized: "本地 IPA 无法读取，已保留原文件；其他任务可继续使用：\(file.lastPathComponent)\n\(error.localizedDescription)") }
             }
         }
     }
@@ -750,14 +758,14 @@ final class DownloadManager: NSObject, ObservableObject {
             do { try save(snapshot); failed = false } catch { failed = true }
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                if failed { self.saveWarning = "下载任务暂时无法保存，请检查设备存储空间。" }
+                if failed { self.saveWarning = String(localized: "下载任务暂时无法保存，请检查设备存储空间。") }
                 else if self.saveWarning != nil { self.saveWarning = nil }
             }
         }
         if wait { persistQueue.sync(execute: write) } else { persistQueue.async(execute: write) }
     }
     private func saveNewJobs(_ next: [DownloadJob]) throws {
-        guard !loadingJobs, removingIDs.isEmpty else { throw ToolError.message("正在保存任务，请稍后重试") }
+        guard !loadingJobs, removingIDs.isEmpty else { throw ToolError.message(String(localized: "正在保存任务，请稍后重试")) }
         let next = next.map { rowProgress[$0.id]?.applying(to: $0) ?? $0 }
         // Commit the file before publishing a newly enqueued/imported/retried
         // task; on the same queue, after any earlier pending save.
@@ -808,7 +816,7 @@ enum MacPackageStorage {
     static func finish(staging: URL, job: DownloadJob) throws -> (String, StoreApp) {
         guard let format = job.rawFormat, ["dmg", "pkg", "zip"].contains(format),
               let length = (try FileManager.default.attributesOfItem(atPath: staging.path)[.size] as? NSNumber)?.int64Value,
-              length >= 8 else { throw ToolError.message("下载的 Mac 文件不完整") }
+              length >= 8 else { throw ToolError.message(String(localized: "下载的 Mac 文件不完整")) }
         let file = try FileHandle(forReadingFrom: staging)
         defer { try? file.close() }
         let prefix = try file.read(upToCount: 4) ?? Data()
@@ -824,15 +832,15 @@ enum MacPackageStorage {
             valid = true
         case "zip": valid = prefix.starts(with: [0x50, 0x4B, 0x03, 0x04])
         default:
-            guard length >= 512 else { throw ToolError.message("DMG 文件不完整") }
+            guard length >= 512 else { throw ToolError.message(String(localized: "DMG 文件不完整")) }
             try file.seek(toOffset: UInt64(length - 512))
             valid = (try file.read(upToCount: 4) ?? Data()) == Data("koly".utf8)
         }
-        guard valid else { throw ToolError.message("文件内容不是有效的 \(format.uppercased()) 安装包") }
+        guard valid else { throw ToolError.message(String(localized: "文件内容不是有效的 \(format.uppercased()) 安装包")) }
         let filename = "\(job.id.uuidString)-\(PackageService.safeName(job.app.name).prefix(40)).\(format)"
         let destination = LocalResources.packages.appendingPathComponent(filename)
         guard !FileManager.default.fileExists(atPath: destination.path) else {
-            throw ToolError.message("同名安装包已存在")
+            throw ToolError.message(String(localized: "同名安装包已存在"))
         }
         try FileManager.default.moveItem(at: staging, to: destination)
         var app = job.app
@@ -877,7 +885,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
         let received = LocalResources.support.appendingPathComponent("\(id.uuidString)-\(UUID().uuidString).received")
         do {
             guard let response = downloadTask.response as? HTTPURLResponse, (200..<300).contains(response.statusCode) else {
-                throw ToolError.message("下载失败（\((downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0)），请重试")
+                throw ToolError.message(String(localized: "下载失败（\((downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0)），请重试"))
             }
             if FileManager.default.fileExists(atPath: received.path) {
                 try? FileManager.default.removeItem(at: received)

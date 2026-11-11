@@ -2,7 +2,7 @@ import SwiftUI
 
 /// App Store-style search: title with the account avatar on one line, a
 /// capsule search bar under it, filter chips, recent
-/// searches as suggestions, and result rows with a "获取" capsule.
+/// searches as suggestions, and result rows with a String(localized: "获取") capsule.
 struct SearchView: View {
     @EnvironmentObject private var store: ToolStore
     @EnvironmentObject private var apple: AppleService

@@ -27,7 +27,7 @@ final class ToolStore: ObservableObject {
     @Published var settings: ToolSettings {
         didSet {
             do { LocalResources.defaults.set(try JSONEncoder().encode(settings), forKey: LocalResources.settings) }
-            catch { errorMessage = "设置保存失败：" + error.localizedDescription }
+            catch { errorMessage = String(localized: "设置保存失败：") + error.localizedDescription }
             downloads.configure(settings)
             // Region or platform changed: refresh the results here, so it also
             // happens when the search page is not on screen (iPad sidebar).
@@ -136,9 +136,9 @@ final class ToolStore: ObservableObject {
         let snapshot = await Task.detached(priority: .userInitiated) {
             var snapshot = Snapshot()
             do { snapshot.favorites = try LocalResources.loadChecked([StoreApp].self, filename: "favorites.json") ?? [] }
-            catch { snapshot.favoritesError = "关注列表读取失败；已保留原文件。" }
+            catch { snapshot.favoritesError = String(localized: "关注列表读取失败；已保留原文件。") }
             do { snapshot.owned = try LocalResources.loadChecked([String: [OwnedApp]].self, filename: LocalResources.ownedFilename) ?? [:] }
-            catch { snapshot.ownedError = "已购缓存读取失败；已保留原文件，不能覆盖其他账号记录。" }
+            catch { snapshot.ownedError = String(localized: "已购缓存读取失败；已保留原文件，不能覆盖其他账号记录。") }
             snapshot.watch = LocalResources.load([String: WatchRecord].self, filename: "watch.json") ?? [:]
             snapshot.catalog = LocalResources.load([String: [StoreApp]].self, filename: "app-catalog.json") ?? [:]
             snapshot.names = (LocalResources.load([AppNameEntry].self, filename: AppNameCatalog.cacheFile) ?? []) + AppNameCatalog.bundled()
@@ -318,10 +318,10 @@ final class ToolStore: ObservableObject {
         lastAccountID = id
         guard let id, let account = apple.accounts.first(where: { $0.id == id }) else {
             // Removing the signed-in account reports its own confirmation.
-            if let previous, apple.accounts.contains(where: { $0.id == previous }) { infoMessage = "已退出登录" }
+            if let previous, apple.accounts.contains(where: { $0.id == previous }) { infoMessage = String(localized: "已退出登录") }
             return
         }
-        infoMessage = "已切换到 " + (account.name.isEmpty ? account.id : account.name)
+        infoMessage = String(localized: "已切换到 ") + (account.name.isEmpty ? account.id : account.name)
         if let country = StoreService.country(forStorefront: account.storeFront), settings.store.country != country {
             // Changing the region re-runs the search (see settings).
             settings.store.country = country
@@ -355,14 +355,14 @@ final class ToolStore: ObservableObject {
         }
     }
     private func changeFavorite(_ app: StoreApp) async {
-        guard !cacheLoading else { infoMessage = "正在载入本地记录，请稍后重试"; return }
+        guard !cacheLoading else { infoMessage = String(localized: "正在载入本地记录，请稍后重试"); return }
         guard favoritesStorageError == nil else { errorMessage = favoritesStorageError; return }
         var next = favorites
         let following = !next.contains(where: { $0.id == app.id })
         let previousIndex = next.firstIndex { $0.id == app.id } ?? 0
         if following { next.insert(app, at: 0) } else { next.removeAll { $0.id == app.id } }
         do { try await saveCache(next, filename: "favorites.json"); favorites = next; updateLocalResults() }
-        catch { errorMessage = "关注保存失败：" + error.localizedDescription; return }
+        catch { errorMessage = String(localized: "关注保存失败：") + error.localizedDescription; return }
         if following {
             // Start the record now, so price changes count from this moment.
             Task { await checkWatched(force: true) }
@@ -373,7 +373,7 @@ final class ToolStore: ObservableObject {
             let previousRecords = watch.filter { $0.value.id == app.id }
             watch = watch.filter { $0.value.id != app.id }
             persistWatch()
-            undoNotice = UndoNotice(message: "已取消关注 \(app.name)") { [weak self] in
+            undoNotice = UndoNotice(message: String(localized: "已取消关注 \(app.name)")) { [weak self] in
                 guard let self, !self.isFavorite(app) else { return }
                 let previous = self.favoriteTask
                 self.favoriteTask = Task {
@@ -490,7 +490,7 @@ final class ToolStore: ObservableObject {
                 await previous?.value
                 let next = self.favorites.map { metadata[$0.id] ?? $0 }
                 do { try await self.saveCache(next, filename: "favorites.json"); self.favorites = next }
-                catch { self.errorMessage = "关注保存失败：" + error.localizedDescription }
+                catch { self.errorMessage = String(localized: "关注保存失败：") + error.localizedDescription }
             }
         }
         if watchRecheck {
@@ -515,8 +515,8 @@ final class ToolStore: ObservableObject {
         }
         guard !lines.isEmpty else { return }
         let content = UNMutableNotificationContent()
-        content.title = lines.count == 1 ? "关注的应用有变化" : "\(lines.count) 条关注应用变化"
-        content.body = lines.prefix(4).joined(separator: "\n") + (lines.count > 4 ? "\n等" : "")
+        content.title = lines.count == 1 ? String(localized: "关注的应用有变化") : String(localized: "\(lines.count) 条关注应用变化")
+        content.body = lines.prefix(4).joined(separator: "\n") + (lines.count > 4 ? String(localized: "\n等") : "")
         content.sound = .default
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "watch-" + UUID().uuidString, content: content, trigger: nil))
     }
@@ -531,7 +531,7 @@ final class ToolStore: ObservableObject {
     func removeHistory(_ term: String) {
         guard let index = searchHistory.firstIndex(where: { $0.term == term }) else { return }
         let item = searchHistory.remove(at: index); persistHistory()
-        undoNotice = UndoNotice(message: "已删除搜索记录") { [weak self] in
+        undoNotice = UndoNotice(message: String(localized: "已删除搜索记录")) { [weak self] in
             guard let self, !self.searchHistory.contains(where: { $0.term == term }) else { return }
             self.searchHistory.insert(item, at: min(index, self.searchHistory.count))
             self.searchHistory = Array(self.searchHistory.prefix(50)); self.persistHistory()
@@ -540,7 +540,7 @@ final class ToolStore: ObservableObject {
     func clearHistory() {
         let previous = searchHistory
         searchHistory.removeAll(); persistHistory()
-        undoNotice = UndoNotice(message: "已清除最近搜索") { [weak self] in
+        undoNotice = UndoNotice(message: String(localized: "已清除最近搜索")) { [weak self] in
             guard let self else { return }
             let current = Set(self.searchHistory.map(\.term))
             self.searchHistory = Array((self.searchHistory + previous.filter { !current.contains($0.term) }).prefix(50))
@@ -557,7 +557,7 @@ final class ToolStore: ObservableObject {
 
     func loadVersions(for app: StoreApp, force: Bool = false, official: Bool = false) async throws -> [AppVersion] {
         #if DEBUG
-        if visualPreview { return [AppVersion(id: "123456789", version: "3.2.1", source: "版本资料"), AppVersion(id: "123456788", version: "3.1.0", source: "版本资料")] }
+        if visualPreview { return [AppVersion(id: "123456789", version: "3.2.1", source: String(localized: "版本资料")), AppVersion(id: "123456788", version: "3.1.0", source: String(localized: "版本资料"))] }
         #endif
         let context = settings.store
         if official, let account = apple.activeID {
@@ -573,12 +573,12 @@ final class ToolStore: ObservableObject {
             // Only the latest version is public; the full list needs the account.
             guard let id = try await MacStoreOfferService.latestVersionID(appID: app.id, bundleID: app.bundleID, country: context.country)
             else { return [] }
-            return [AppVersion(id: id, version: app.version.isEmpty ? "未知版本" : app.version, source: "App Store")]
+            return [AppVersion(id: id, version: app.version.isEmpty ? String(localized: "未知版本") : app.version, source: "App Store")]
         }
         if context.platform == .tvOS {
             guard let listing = try await StoreService.platformApp(app.id, store: context),
                   let id = listing.externalVersionID, !id.isEmpty else { return [] }
-            return [AppVersion(id: id, version: listing.version.isEmpty ? "未知版本" : listing.version, source: "Apple TV")]
+            return [AppVersion(id: id, version: listing.version.isEmpty ? String(localized: "未知版本") : listing.version, source: "Apple TV")]
         }
         return try await versions.thirdParty(app.id, sources: settings.versionSources, force: force)
     }
@@ -745,8 +745,8 @@ final class ToolStore: ObservableObject {
         guard LocalResources.defaults.string(forKey: key) != release.version else { return }
         LocalResources.defaults.set(release.version, forKey: key)
         let content = UNMutableNotificationContent()
-        content.title = "iPadn \(release.version) 可以更新了"
-        content.body = "打开 iPadn，在「设置」中查看更新内容并下载新版本。"
+        content.title = String(localized: "iPadn \(release.version) 可以更新了")
+        content.body = String(localized: "打开 iPadn，在「设置」中查看更新内容并下载新版本。")
         content.sound = .default
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "app-update-" + release.version, content: content, trigger: nil))
     }
@@ -813,8 +813,8 @@ final class ToolStore: ObservableObject {
         LocalResources.defaults.set(notified, forKey: key)
         let names = fresh.values.sorted { $0.name < $1.name }.prefix(3).map { "\($0.name) \($0.version)" }
         let content = UNMutableNotificationContent()
-        content.title = fresh.count == 1 ? "\(fresh.values.first!.name) 有新版本" : "\(fresh.count) 个应用有新版本"
-        content.body = names.joined(separator: "、") + (fresh.count > 3 ? " 等" : "") + "。打开 iPadn 下载新版本。"
+        content.title = fresh.count == 1 ? String(localized: "\(fresh.values.first!.name) 有新版本") : String(localized: "\(fresh.count) 个应用有新版本")
+        content.body = names.joined(separator: "、") + (fresh.count > 3 ? String(localized: " 等") : "") + String(localized: "。打开 iPadn 下载新版本。")
         content.sound = .default
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "update-" + UUID().uuidString, content: content, trigger: nil))
     }
@@ -822,7 +822,7 @@ final class ToolStore: ObservableObject {
     /// Downloads the store's current version of a finished download.
     func downloadUpdate(of job: DownloadJob) async throws {
         guard let key = job.updateKey, let platform = job.updatePlatform, let latest = availableUpdates[key] else { return }
-        guard apple.active != nil else { throw ToolError.message("请先在「账号」中登录 Apple 账号") }
+        guard apple.active != nil else { throw ToolError.message(String(localized: "请先在「账号」中登录 Apple 账号")) }
         var app = latest
         if app.iconURL == nil { app.iconURL = job.app.iconURL }
         if platform == .macOS {
@@ -834,7 +834,7 @@ final class ToolStore: ObservableObject {
             if asset.app.iconURL == nil { asset.app.iconURL = app.iconURL }
             try downloads.enqueue(asset)
         }
-        infoMessage = "已开始下载新版本"
+        infoMessage = String(localized: "已开始下载新版本")
     }
 
     /// Adds the latest version of several apps, one at a time. A problem
@@ -857,12 +857,12 @@ final class ToolStore: ObservableObject {
                 }
                 added += 1
             } catch let error where error is AppleAuthError || error is AppleLoginError {
-                failures.append("请到「账号」中重新验证 Apple 账号后再试。")
+                failures.append(String(localized: "请到「账号」中重新验证 Apple 账号后再试。"))
                 break
             } catch {
                 let message = error.localizedDescription
                 failures.append((app.name.isEmpty ? app.id : app.name) + "：" + message)
-                if message.contains("上限") { break }
+                if error is DownloadLimitReached { break }
             }
             progress(index + 1)
         }
@@ -870,8 +870,8 @@ final class ToolStore: ObservableObject {
     }
 
     func refreshDownload(_ job: DownloadJob) async throws {
-        guard job.status == .failed, job.asset != nil else { throw ToolError.message("此任务无法重试") }
-        guard apple.activeID == job.account else { throw ToolError.message("请先切换至原下载账号：\(job.account ?? "")") }
+        guard job.status == .failed, job.asset != nil else { throw ToolError.message(String(localized: "此任务无法重试")) }
+        guard apple.activeID == job.account else { throw ToolError.message(String(localized: "请先切换至原下载账号：\(job.account ?? "")")) }
         let platform: AppPlatform
         switch job.asset?.platform.lowercased() {
         case "appletvos", "tvos", "atv9": platform = .tvOS
@@ -888,7 +888,7 @@ final class ToolStore: ObservableObject {
         await cacheLoadTask?.value
         guard accountRemoving == nil else { return }
         guard !ownedLoading, let id = apple.activeID else {
-            if apple.activeID == nil { errorMessage = "请先在账号页登录" }
+            if apple.activeID == nil { errorMessage = String(localized: "请先在账号页登录") }
             return
         }
         // An earlier error stays until this sync settles, instead of
@@ -956,8 +956,8 @@ final class ToolStore: ObservableObject {
     }
 
     func deleteAccount(_ id: String) async throws {
-        guard !cacheLoading else { throw ToolError.message("正在载入本地记录，请稍后重试") }
-        guard accountRemoving == nil else { throw ToolError.message("正在移除账号，请稍后重试") }
+        guard !cacheLoading else { throw ToolError.message(String(localized: "正在载入本地记录，请稍后重试")) }
+        guard accountRemoving == nil else { throw ToolError.message(String(localized: "正在移除账号，请稍后重试")) }
         guard ownedStorageError == nil else { throw ToolError.message(ownedStorageError!) }
         accountRemoving = id
         defer { accountRemoving = nil }
@@ -1011,7 +1011,7 @@ final class ToolStore: ObservableObject {
 extension ToolStore {
     func prepareAccountPreview() {
         apple.prepareAccountPreview()
-        owned = [OwnedApp(id: "preview-app", bundleID: "example.pixel", name: "像素日记", version: "3.2", purchaseDate: Date(), iconURL: nil)]
+        owned = [OwnedApp(id: "preview-app", bundleID: "example.pixel", name: String(localized: "像素日记"), version: "3.2", purchaseDate: Date(), iconURL: nil)]
     }
     func prepareArchivePreview() {
         searchText = "Forward"; lastSearchTerm = searchText; hasSearched = true
@@ -1021,7 +1021,7 @@ extension ToolStore {
         visualPreview = true
         cacheLoading = false
         results = []; hasSearched = false; searchText = ""
-        favorites = [StoreApp(id: "preview-app", name: "像素日记", bundleID: "example.pixel", version: "3.2", category: "摄影与录像", size: 128_000_000)]
+        favorites = [StoreApp(id: "preview-app", name: String(localized: "像素日记"), bundleID: "example.pixel", version: "3.2", category: String(localized: "摄影与录像"), size: 128_000_000)]
         let day: TimeInterval = 86400
         var record = WatchRecord(id: "preview-app", country: watchCountry, version: "3.2", price: 18, currency: "CNY",
                                  history: [PricePoint(date: Date().addingTimeInterval(-30 * day), price: 30),
@@ -1029,7 +1029,7 @@ extension ToolStore {
                                  started: Date().addingTimeInterval(-30 * day), checked: Date())
         record.change = .priceDrop(from: 30, to: 18); record.changed = Date().addingTimeInterval(-3 * day)
         watch = [record.key: record]
-        searchHistory = [SearchHistoryItem(term: "效率工具", count: 3, lastUsed: Date()), SearchHistoryItem(term: "照片编辑", count: 1, lastUsed: Date())]
+        searchHistory = [SearchHistoryItem(term: String(localized: "效率工具"), count: 3, lastUsed: Date()), SearchHistoryItem(term: String(localized: "照片编辑"), count: 1, lastUsed: Date())]
     }
 }
 #endif

@@ -13,7 +13,7 @@ struct CredentialsView: View {
     var body: some View {
         Form {
             Section {
-                LabeledContent("设备标识") {
+                LabeledContent(String(localized: "设备标识")) {
                     Text(apple.guid).font(.body.monospaced()).textSelection(.enabled)
                 }
                 Button("拷贝设备标识", systemImage: "doc.on.doc") { copy(apple.guid, secret: false) }
@@ -30,13 +30,13 @@ struct CredentialsView: View {
                     if !account.dsid.isEmpty {
                         LabeledContent("DSID") { Text(account.dsid).font(.body.monospaced()).textSelection(.enabled) }
                     }
-                    if !account.storeFront.isEmpty { LabeledContent("商店代码", value: account.storeFront) }
-                    LabeledContent("令牌") {
+                    if !account.storeFront.isEmpty { LabeledContent(String(localized: "商店代码"), value: account.storeFront) }
+                    LabeledContent(String(localized: "令牌")) {
                         Text(revealed.contains(account.id) ? account.passwordToken : String(repeating: "•", count: 12))
                             .font(.footnote.monospaced()).lineLimit(revealed.contains(account.id) ? nil : 1)
                             .textSelection(.enabled)
                     }
-                    Button(revealed.contains(account.id) ? "隐藏令牌" : "显示令牌",
+                    Button(revealed.contains(account.id) ? String(localized: "隐藏令牌") : String(localized: "显示令牌"),
                            systemImage: revealed.contains(account.id) ? "eye.slash" : "eye") {
                         if revealed.contains(account.id) { revealed.remove(account.id) } else { revealed.insert(account.id) }
                     }
@@ -62,14 +62,14 @@ struct CredentialsView: View {
         }
     }
     private func save(_ value: String) {
-        do { try apple.setGUID(value); store.infoMessage = "已修改设备标识" }
+        do { try apple.setGUID(value); store.infoMessage = String(localized: "已修改设备标识") }
         catch { store.errorMessage = error.localizedDescription }
     }
     private func copy(_ value: String, secret: Bool) {
         var options: [UIPasteboard.OptionsKey: Any] = [.localOnly: true]
         if secret { options[.expirationDate] = Date().addingTimeInterval(120) }
         UIPasteboard.general.setItems([[UTType.plainText.identifier: value]], options: options)
-        store.infoMessage = "已拷贝"
+        store.infoMessage = String(localized: "已拷贝")
     }
 }
 
@@ -113,7 +113,7 @@ enum PackageContents {
     static func extract(_ path: String, from file: URL) throws -> URL {
         let archive = try Archive(url: file, accessMode: .read)
         guard PackageService.isSafeArchivePath(path), let entry = archive[path], entry.type == .file else {
-            throw ToolError.message("找不到这个文件")
+            throw ToolError.message(String(localized: "找不到这个文件"))
         }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("PackageContents", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -122,7 +122,7 @@ enum PackageContents {
         let checksum = try archive.extract(entry, to: destination)
         guard checksum == entry.checksum else {
             try? FileManager.default.removeItem(at: folder)
-            throw ToolError.message("安装包已损坏，请重新下载")
+            throw ToolError.message(String(localized: "安装包已损坏，请重新下载"))
         }
         return destination
     }
@@ -137,7 +137,7 @@ struct PackageContentsView: View {
     @State private var items: [PackageItem]?
     @State private var failure: String?
     @State private var query = ""
-    private var title: String { folder.isEmpty ? "安装包内容" : (folder as NSString).lastPathComponent }
+    private var title: String { folder.isEmpty ? String(localized: "安装包内容") : (folder as NSString).lastPathComponent }
     var body: some View {
         let all = items ?? preloaded
         List {
@@ -164,19 +164,19 @@ struct PackageContentsView: View {
                         }
                     }
                 } header: {
-                    Text(query.isEmpty ? "\(shown.count) 项" : "找到 \(shown.count) 个文件")
+                    Text(query.isEmpty ? String(localized: "\(shown.count) 项") : String(localized: "找到 \(shown.count) 个文件"))
                 }
             } else {
                 Section { HStack { ProgressView(); Text("正在读取…").foregroundStyle(.secondary) } }
             }
         }
         .toolPage().navigationTitle(title).navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $query, prompt: "搜索文件名")
+        .searchable(text: $query, prompt: String(localized: "搜索文件名"))
         .task {
             guard items == nil, preloaded == nil else { return }
             let url = file
             do { items = try await Task.detached(priority: .userInitiated) { try PackageContents.items(url) }.value }
-            catch { failure = "无法读取安装包内容。" }
+            catch { failure = String(localized: "无法读取安装包内容。") }
         }
     }
     static func symbol(_ name: String) -> String {
@@ -207,10 +207,10 @@ private struct PackageFileView: View {
     var body: some View {
         Form {
             Section {
-                LabeledContent("路径") { Text(item.path).font(.footnote.monospaced()).textSelection(.enabled) }
-                LabeledContent("大小", value: Int64(clamping: item.size).byteLabel)
-                LabeledContent("压缩后", value: Int64(clamping: item.compressedSize).byteLabel)
-                if let modified = item.modified { LabeledContent("修改时间", value: modified.formatted(date: .abbreviated, time: .shortened)) }
+                LabeledContent(String(localized: "路径")) { Text(item.path).font(.footnote.monospaced()).textSelection(.enabled) }
+                LabeledContent(String(localized: "大小"), value: Int64(clamping: item.size).byteLabel)
+                LabeledContent(String(localized: "压缩后"), value: Int64(clamping: item.compressedSize).byteLabel)
+                if let modified = item.modified { LabeledContent(String(localized: "修改时间"), value: modified.formatted(date: .abbreviated, time: .shortened)) }
             }
             if let image {
                 Section("预览") { Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 280).frame(maxWidth: .infinity) }
@@ -261,7 +261,7 @@ private struct PackageFileView: View {
     nonisolated static func shortened(_ text: String) -> String {
         let limit = 20_000
         guard text.count > limit else { return text }
-        return String(text.prefix(limit)) + "\n\n…（仅显示前 \(limit) 个字符，完整内容请提取后查看）"
+        return String(text.prefix(limit)) + String(localized: "\n\n…（仅显示前 \(limit) 个字符，完整内容请提取后查看）")
     }
     /// Text as is; property lists (often binary) as XML.
     nonisolated static func readable(_ data: Data) -> String? {

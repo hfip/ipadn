@@ -17,7 +17,7 @@ struct AppUpdateView: View {
                     Text("iPadn \(release.version)").font(.title2.weight(.bold))
                     Text([release.published?.formatted(date: .abbreviated, time: .omitted),
                           release.packageSize > 0 ? release.packageSize.byteLabel : nil,
-                          "当前 \(AppUpdateService.currentVersion)"].compactMap { $0 }.joined(separator: " · "))
+                          String(localized: "当前 \(AppUpdateService.currentVersion)")].compactMap { $0 }.joined(separator: " · "))
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 4)
@@ -42,7 +42,7 @@ struct AppUpdateView: View {
                     } else {
                         Button { download() } label: {
                             HStack {
-                                Label(progress == nil ? "下载安装包" : "正在下载…", systemImage: "arrow.down.circle")
+                                Label(progress == nil ? String(localized: "下载安装包") : String(localized: "正在下载…"), systemImage: "arrow.down.circle")
                                 Spacer()
                                 if let progress {
                                     Text("\(Int(progress * 100))%").font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
@@ -56,16 +56,16 @@ struct AppUpdateView: View {
                     if AppUpdateService.installedByTrollStore, let url = AppUpdateService.trollStoreURL(for: release) {
                         Button("用 TrollStore 安装", systemImage: "square.and.arrow.down") {
                             UIApplication.shared.open(url) { opened in
-                                if !opened { store.errorMessage = "没有打开 TrollStore，请在 TrollStore 设置中开启 URL Scheme，或下载后通过分享安装。" }
+                                if !opened { store.errorMessage = String(localized: "没有打开 TrollStore，请在 TrollStore 设置中开启 URL Scheme，或下载后通过分享安装。") }
                             }
                         }
                     }
                 }
-                Link(destination: release.page) { Label("在 GitHub 查看", systemImage: "arrow.up.right.square") }
+                Link(destination: release.page) { Label("在 GitHub 查看", systemImage: "arrow.up.forward.square") }
             } footer: {
                 Text(downloaded == nil
-                     ? "安装包未签名。下载后在分享面板中选择你安装 iPadn 时用的签名工具（例如 TrollStore、轻松签），按原来的方式安装新版本即可。"
-                     : "安装包已保存在本机，离开这个页面也不用重新下载。点「安装新版本」后，在分享面板中选择你安装 iPadn 时用的签名工具。")
+                     ? String(localized: "安装包未签名。下载后在分享面板中选择你安装 iPadn 时用的签名工具（例如 TrollStore、轻松签），按原来的方式安装新版本即可。")
+                     : String(localized: "安装包已保存在本机，离开这个页面也不用重新下载。点「安装新版本」后，在分享面板中选择你安装 iPadn 时用的签名工具。"))
             }
         }
         .navigationTitle("iPadn 更新")
@@ -90,7 +90,7 @@ struct AppUpdateView: View {
                 share = SharedFile(url: file)
             } catch {
                 progress = nil
-                if !(error is CancellationError) { store.errorMessage = "下载失败，请检查网络后重试。" }
+                if !(error is CancellationError) { store.errorMessage = String(localized: "下载失败，请检查网络后重试。") }
             }
         }
     }

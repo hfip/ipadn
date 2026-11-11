@@ -8,10 +8,13 @@ enum ToolError: LocalizedError {
 /// A non-2xx response, kept typed so callers can tell "not found" apart.
 struct HTTPStatusError: LocalizedError {
     let code: Int
-    var errorDescription: String? { code == 404 ? "找不到相关内容" : "网络请求失败（\(code)），请稍后重试" }
+    var errorDescription: String? { code == 404 ? String(localized: "找不到相关内容") : String(localized: "网络请求失败（\(code)），请稍后重试") }
 }
 
 enum AppErrorMessage {
+    /// Thrown and compared as one value, so the check survives translation.
+    static let historyUnavailable = String(localized: "暂时无法获取历史版本，可打开「从 Apple 获取完整版本列表」或手动输入版本 ID")
+
     static func forSearch(_ error: Error) -> String {
         if error is CancellationError { return "" }
         let ns = error as NSError
@@ -95,7 +98,7 @@ struct StoreApp: Codable, Identifiable, Hashable {
     // No public listing in any storefront (removed from sale); the App ID
     // still works for accounts that own it.
     var delisted: Bool?
-    static let delistedPlaceholder = "未在公开商店找到"
+    static let delistedPlaceholder = String(localized: "未在公开商店找到")
     var isDelisted: Bool { delisted == true || category == Self.delistedPlaceholder }
     /// Category for display; never the legacy delisted placeholder.
     var displayCategory: String { category == Self.delistedPlaceholder ? "" : category }
@@ -158,13 +161,13 @@ enum DownloadStatus: String, Codable {
     case queued, running, pausing, paused, processing, completed, failed
     var title: String {
         switch self {
-        case .queued: return "等待下载"
-        case .running: return "下载中"
-        case .pausing: return "正在暂停"
-        case .paused: return "已暂停"
-        case .processing: return "正在处理安装包"
-        case .completed: return "已完成"
-        case .failed: return "下载失败"
+        case .queued: return String(localized: "等待下载")
+        case .running: return String(localized: "下载中")
+        case .pausing: return String(localized: "正在暂停")
+        case .paused: return String(localized: "已暂停")
+        case .processing: return String(localized: "正在处理安装包")
+        case .completed: return String(localized: "已完成")
+        case .failed: return String(localized: "下载失败")
         }
     }
 }
@@ -319,13 +322,13 @@ enum SearchQuery: Equatable {
 
     static func parse(_ input: String) throws -> SearchQuery {
         let text = input.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { throw ToolError.message("请输入应用名称、App ID 或 App Store 链接") }
+        guard !text.isEmpty else { throw ToolError.message(String(localized: "请输入应用名称、App ID 或 App Store 链接")) }
         if let url = URL(string: text), url.host?.lowercased() == "apps.apple.com" {
             let parts = url.pathComponents
             if let id = parts.first(where: { $0.hasPrefix("id") && $0.dropFirst(2).allSatisfy({ $0.isASCII && $0.isNumber }) && $0.count > 2 }) {
                 return .appID(String(id.dropFirst(2)), versionID: nil)
             }
-            throw ToolError.message("App Store 链接中没有有效 App ID")
+            throw ToolError.message(String(localized: "App Store 链接中没有有效 App ID"))
         }
         let parts = text.components(separatedBy: CharacterSet(charactersIn: " ,，:/+\t\n")).filter { !$0.isEmpty }
         if (1...2).contains(parts.count), parts.allSatisfy({ $0.allSatisfy({ $0.isASCII && $0.isNumber }) }) {
@@ -446,6 +449,16 @@ enum VersionOrder {
 enum DownloadFilter: String, CaseIterable, Identifiable {
     case all = "全部", active = "进行中", paused = "已暂停", completed = "已完成", failed = "失败"
     var id: String { rawValue }
+    /// Raw values stay Chinese because they are identifiers; only the label is translated.
+    var title: String {
+        switch self {
+        case .all: return String(localized: "全部")
+        case .active: return String(localized: "进行中")
+        case .paused: return String(localized: "已暂停")
+        case .completed: return String(localized: "已完成")
+        case .failed: return String(localized: "失败")
+        }
+    }
     var symbol: String {
         switch self {
         case .all: return "square.stack"

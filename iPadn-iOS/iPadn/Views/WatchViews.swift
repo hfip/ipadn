@@ -47,7 +47,7 @@ struct PriceHistorySection: View {
     var body: some View {
         let shown = country.flatMap { countries.contains($0) ? $0 : nil } ?? store.watchCountry
         if countries.count > 1 {
-            LabeledContent("地区") {
+            LabeledContent(String(localized: "地区")) {
                 Picker("地区", selection: Binding(get: { shown }, set: { country = $0 })) {
                     ForEach(countries, id: \.self) { Text(StoreRegions.flag($0) + " " + StoreRegions.name($0)).tag($0) }
                 }
@@ -59,11 +59,11 @@ struct PriceHistorySection: View {
                 Text("当前地区已下架，获取过的账号仍可下载。").font(.subheadline).foregroundStyle(.secondary)
             }
             if let price = record.price {
-                LabeledContent("当前价格", value: WatchService.format(price, currency: record.currency))
+                LabeledContent(String(localized: "当前价格"), value: WatchService.format(price, currency: record.currency))
             }
             if record.history.count > 1 {
                 if let low = record.history.map(\.price).min() {
-                    LabeledContent("关注以来最低", value: WatchService.format(low, currency: record.currency))
+                    LabeledContent(String(localized: "关注以来最低"), value: WatchService.format(low, currency: record.currency))
                 }
                 PriceHistoryChart(record: record)
                     .cardRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 20))
@@ -88,7 +88,7 @@ struct PriceHistoryChart: View {
         // Prices hold until the next change: draw steps, extended to today.
         let points = record.history + (record.history.last.map { [PricePoint(date: max(Date(), $0.date), price: $0.price)] } ?? [])
         Chart(Array(points.enumerated()), id: \.offset) { item in
-            LineMark(x: .value("日期", item.element.date), y: .value("价格", item.element.price))
+            LineMark(x: .value(String(localized: "日期"), item.element.date), y: .value(String(localized: "价格"), item.element.price))
                 .interpolationMethod(.stepEnd)
                 .foregroundStyle(Color.accentColor)
         }

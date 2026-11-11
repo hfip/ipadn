@@ -1,0 +1,26 @@
+{
+  "sourceLanguage": "zh-Hans",
+  "strings": {
+    "通过本机回环地址加载签名资源和提供安装包文件。": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحميل موارد التوقيع وتقديم ملفات حزم التثبيت عبر عنوان الاسترجاع المحلي."
+          }
+        }
+      }
+    },
+    "IPA 安装包": {
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حزمة تثبيت IPA"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

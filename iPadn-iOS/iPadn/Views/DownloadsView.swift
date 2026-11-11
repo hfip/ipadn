@@ -44,7 +44,7 @@ struct DownloadsView: View {
         List {
             if !manager.jobs.isEmpty {
                 Section {
-                    SearchInput(text: $term, placeholder: "搜索名称、版本或 Bundle ID", capsule: true)
+                    SearchInput(text: $term, placeholder: String(localized: "搜索名称、版本或 Bundle ID"), capsule: true)
                         .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                 }
                 .listRowBackground(Color.clear).listRowSeparator(.hidden)
@@ -54,7 +54,7 @@ struct DownloadsView: View {
             if let warning = manager.saveWarning { Section { InlineIssue(message: warning) } }
             if visible.isEmpty {
                 Section {
-                    EmptyState(title: manager.jobs.isEmpty ? "暂无下载任务" : "没有匹配任务", message: manager.jobs.isEmpty ? "在搜索中获取应用，或点按右上角的 + 导入安装包。" : "试试其他筛选条件。", symbol: manager.jobs.isEmpty ? "tray.and.arrow.down" : "line.3.horizontal.decrease.circle", actionTitle: manager.jobs.isEmpty ? "搜索应用" : "显示全部", action: {
+                    EmptyState(title: manager.jobs.isEmpty ? String(localized: "暂无下载任务") : String(localized: "没有匹配任务"), message: manager.jobs.isEmpty ? String(localized: "在搜索中获取应用，或点按右上角的 + 导入安装包。") : String(localized: "试试其他筛选条件。"), symbol: manager.jobs.isEmpty ? "tray.and.arrow.down" : "line.3.horizontal.decrease.circle", actionTitle: manager.jobs.isEmpty ? String(localized: "搜索应用") : String(localized: "显示全部"), action: {
                         if manager.jobs.isEmpty { store.tab = 0 } else { term = ""; filter = .all }
                     })
                 }
@@ -78,7 +78,7 @@ struct DownloadsView: View {
                             if editMode.isEditing {
                                 Button { toggleSelection(job.id) } label: { Color.clear.contentShape(Rectangle()) }
                                     .buttonStyle(.plain)
-                                    .accessibilityLabel((selection.contains(job.id) ? "取消选择 " : "选择 ") + job.app.name)
+                                    .accessibilityLabel((selection.contains(job.id) ? String(localized: "取消选择 ") : String(localized: "选择 ")) + job.app.name)
                                     .accessibilityIdentifier("download.select." + job.id.uuidString)
                             }
                         }
@@ -97,7 +97,7 @@ struct DownloadsView: View {
                                     } else {
                                         Button("保留此版本", systemImage: "pin") {
                                             store.keepVersion(true, of: job); UX.feedback()
-                                            store.infoMessage = "已保留此版本，不再提醒更新"
+                                            store.infoMessage = String(localized: "已保留此版本，不再提醒更新")
                                         }
                                     }
                                 }
@@ -111,7 +111,7 @@ struct DownloadsView: View {
                                         perform {
                                             let url = try await store.installation.localURL(file: file)
                                             UIPasteboard.general.string = url.absoluteString
-                                            store.infoMessage = "已复制链接"
+                                            store.infoMessage = String(localized: "已复制链接")
                                         }
                                     }
                                 }
@@ -122,8 +122,8 @@ struct DownloadsView: View {
                         }
                     } header: {
                         if job.id == visible.first?.id {
-                            Text((filter == .all ? "\(visible.count) 个项目" : "\(filter.rawValue) · \(visible.count)")
-                                 + (updates.isEmpty ? "" : " · \(updates.count) 个可更新"))
+                            Text((filter == .all ? String(localized: "\(visible.count) 个项目") : String(localized: "\(filter.title) · \(visible.count)"))
+                                 + (updates.isEmpty ? "" : String(localized: " · \(updates.count) 个可更新")))
                         }
                     }
                 }
@@ -140,7 +140,7 @@ struct DownloadsView: View {
         .environment(\.editMode, $editMode)
         .toolbar {
             ToolbarItemGroup(placement: .topBarLeading) {
-                Button(editMode.isEditing ? "完成" : "编辑") {
+                Button(editMode.isEditing ? String(localized: "完成") : String(localized: "编辑")) {
                     withAnimation(.snappy(duration: 0.3)) { editMode = editMode.isEditing ? .inactive : .active }
                 }
                 .disabled(manager.jobs.isEmpty)
@@ -149,14 +149,14 @@ struct DownloadsView: View {
                     Menu {
                         Picker("下载状态", selection: $filter) {
                             ForEach(DownloadFilter.allCases) { item in
-                                Label(item.rawValue, systemImage: item.symbol).tag(item)
+                                Label(item.title, systemImage: item.symbol).tag(item)
                                     .accessibilityIdentifier("download.filter." + item.id)
                             }
                         }
                     } label: {
                         Image(systemName: filter.symbol)
                             .frame(minWidth: 44, minHeight: 44)
-                    }.accessibilityLabel("筛选下载任务，当前" + filter.rawValue).accessibilityIdentifier("download.filter.menu")
+                    }.accessibilityLabel(String(localized: "筛选下载任务，当前") + filter.title).accessibilityIdentifier("download.filter.menu")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -196,7 +196,7 @@ struct DownloadsView: View {
                 }.buttonStyle(.plain)
                 if manager.jobs.contains(where: { [.running, .queued, .paused].contains($0.status) }) {
                     Divider()
-                    Button("暂停全部", systemImage: "pause.circle") { manager.pauseAll(); showingActions = false; store.infoMessage = "已暂停下载" }
+                    Button("暂停全部", systemImage: "pause.circle") { manager.pauseAll(); showingActions = false; store.infoMessage = String(localized: "已暂停下载") }
                         .disabled(!manager.jobs.contains { [.running, .queued].contains($0.status) }).frame(minHeight: 44)
                     Button("继续全部", systemImage: "play.circle") { manager.resumeAll(); showingActions = false }
                         .disabled(!manager.jobs.contains { $0.status == .paused }).frame(minHeight: 44)
@@ -221,9 +221,9 @@ struct DownloadsView: View {
                     Form {
                         Section { AppRow(app: packageDisplayApp(job)); TaskStatusPill(status: job.status) }
                         Section("任务信息") {
-                            LabeledContent("添加时间", value: job.createdAt.formatted(date: .abbreviated, time: .shortened))
-                            if job.status != .completed { LabeledContent("已下载", value: job.downloaded.byteLabel) }
-                            if let account = job.account { LabeledContent("Apple 账号", value: account) }
+                            LabeledContent(String(localized: "添加时间"), value: job.createdAt.formatted(date: .abbreviated, time: .shortened))
+                            if job.status != .completed { LabeledContent(String(localized: "已下载"), value: job.downloaded.byteLabel) }
+                            if let account = job.account { LabeledContent(String(localized: "Apple 账号"), value: account) }
                         }
                         if let error = job.error { Section("未完成原因") { Text(error).font(.subheadline) } }
                         if job.status == .completed {
@@ -251,13 +251,13 @@ struct DownloadsView: View {
             TextField("https://…", text: $link).textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
             Button("加入下载") {
                 do {
-                    guard let url = URL(string: link.trimmingCharacters(in: .whitespacesAndNewlines)) else { throw ToolError.message("链接无效") }
-                    try manager.enqueueURL(url); link = ""; filter = .all; term = ""; store.infoMessage = "已开始下载"
+                    guard let url = URL(string: link.trimmingCharacters(in: .whitespacesAndNewlines)) else { throw ToolError.message(String(localized: "链接无效")) }
+                    try manager.enqueueURL(url); link = ""; filter = .all; term = ""; store.infoMessage = String(localized: "已开始下载")
                 } catch { store.errorMessage = error.localizedDescription }
             }
             Button("取消", role: .cancel) { }
         } message: { Text("输入 IPA 安装包的下载链接。") }
-        .actionConfirmation(isPresented: $confirmingDelete, title: "删除 \(pendingDelete.count) 项任务？", message: "已下载的安装包也会一并删除。", confirmTitle: "删除任务与文件") {
+        .actionConfirmation(isPresented: $confirmingDelete, title: "删除 \(pendingDelete.count) 项任务？", message: String(localized: "已下载的安装包也会一并删除。"), confirmTitle: String(localized: "删除任务与文件")) {
             // Recheck task states before the durable batch commit.
             let ids = pendingDelete
             pendingDelete.removeAll()
@@ -265,7 +265,7 @@ struct DownloadsView: View {
                 let count = try await manager.removeBatch(ids)
                 selection.subtract(ids)
                 if manager.jobs.isEmpty { editMode = .inactive }
-                store.infoMessage = "已删除 \(count) 项任务与文件"
+                store.infoMessage = String(localized: "已删除 \(count) 项任务与文件")
             }
         }
         .sheet(item: $installing) { job in
@@ -298,7 +298,7 @@ struct DownloadsView: View {
                 // The picker hands over a private copy; don't leave a second copy of a large IPA behind.
                 if url.resolvingSymlinksInPath().path.hasPrefix(temporary) { try? FileManager.default.removeItem(at: url) }
             }
-            if imported > 0 { filter = .all; term = ""; store.infoMessage = "已导入 \(imported) 个安装包" }
+            if imported > 0 { filter = .all; term = ""; store.infoMessage = String(localized: "已导入 \(imported) 个安装包") }
             if !failures.isEmpty { store.errorMessage = failures.joined(separator: "\n") }
         }
     }
@@ -323,7 +323,7 @@ struct DownloadsView: View {
     }
     private func askDelete(_ ids: Set<UUID>) {
         pendingDelete = Set(manager.jobs.filter { ids.contains($0.id) && $0.status != .processing && $0.status != .pausing }.map(\.id))
-        if pendingDelete.isEmpty { store.infoMessage = "任务处理完成后才能删除" }
+        if pendingDelete.isEmpty { store.infoMessage = String(localized: "任务处理完成后才能删除") }
         else { confirmingDelete = true }
     }
     private func perform(_ operation: @escaping () async throws -> Void) {
@@ -411,7 +411,7 @@ struct DownloadTaskRow: View {
             Text([job.status.title, progressText].filter { !$0.isEmpty }.joined(separator: " · "))
                 .font(.caption.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1)
         case .processing:
-            Text(manager.cancelling.contains(job.id) ? "正在取消…" : manager.processingDetail[job.id] ?? job.status.title)
+            Text(manager.cancelling.contains(job.id) ? String(localized: "正在取消…") : manager.processingDetail[job.id] ?? job.status.title)
                 .font(.caption.monospacedDigit()).foregroundStyle(.secondary).lineLimit(2)
         default:
             TaskStatusPill(status: job.status)
@@ -422,8 +422,8 @@ struct DownloadTaskRow: View {
     }
     private func etaText(_ seconds: TimeInterval?) -> String {
         guard let seconds, seconds.isFinite else { return "" }
-        return seconds < 60 ? "剩余 \(max(1, Int(seconds))) 秒" : seconds < 3600 ? "剩余 \(Int(ceil(seconds / 60))) 分钟"
-            : "剩余 \(Int(ceil(min(seconds / 3600, 999)))) 小时"
+        return seconds < 60 ? String(localized: "剩余 \(max(1, Int(seconds))) 秒") : seconds < 3600 ? String(localized: "剩余 \(Int(ceil(seconds / 60))) 分钟")
+            : String(localized: "剩余 \(Int(ceil(min(seconds / 3600, 999)))) 小时")
     }
     @ViewBuilder private var trailingControl: some View {
         switch job.status {
@@ -518,12 +518,12 @@ private struct PackagePlatformRow: View {
     let file: URL
     @State private var summary: String?
     var body: some View {
-        LabeledContent("适用设备", value: summary ?? "…")
+        LabeledContent(String(localized: "适用设备"), value: summary ?? "…")
             .accessibilityIdentifier("download.package-platform")
             .task(id: file) {
                 let url = file
                 summary = await Task.detached(priority: .utility) {
-                    (try? PackageService.platformSummary(url)) ?? "未知"
+                    (try? PackageService.platformSummary(url)) ?? String(localized: "未知")
                 }.value
             }
     }

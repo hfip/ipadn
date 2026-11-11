@@ -9,7 +9,7 @@ struct InstallationSettingsView: View {
     @State private var replacingCertificate = false
     @State private var certificateData: Data?
     @State private var password = ""
-    @State private var certificateName = "未导入"
+    @State private var certificateName: String?
     @State private var issue: String?
     @State private var notice: String?
     @State private var busy = false
@@ -47,9 +47,9 @@ struct InstallationSettingsView: View {
                 Section {
                     TextField("服务器地址", text: $store.settings.localInstallHost)
                         .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
-                    LabeledContent("证书", value: certificateName)
+                    LabeledContent(String(localized: "证书"), value: certificateName ?? String(localized: "未导入"))
                     Button {
-                        if certificateName == "未导入" { createLocalCertificate() }
+                        if certificateName == nil { createLocalCertificate() }
                         else { replacingCertificate = true }
                     } label: { actionLabel("创建证书", systemImage: "lock.shield", action: .create) }
                     .disabled(busy).accessibilityIdentifier("installation.create-certificate")
@@ -85,7 +85,7 @@ struct InstallationSettingsView: View {
                 do {
                     guard let url = try result.get().first else { return }
                     let access = url.startAccessingSecurityScopedResource(); defer { if access { url.stopAccessingSecurityScopedResource() } }
-                    guard let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size <= 2 * 1024 * 1024 else { throw ToolError.message("请选择 .p12 或 .pfx 证书文件") }
+                    guard let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size <= 2 * 1024 * 1024 else { throw ToolError.message(String(localized: "请选择 .p12 或 .pfx 证书文件")) }
                     certificateData = try Data(contentsOf: url); password = ""
                 } catch { issue = error.localizedDescription }
             }
@@ -103,7 +103,7 @@ struct InstallationSettingsView: View {
                         }
                 }.presentationDetents([.medium, .large])
             }
-            .actionConfirmation(isPresented: $replacingCertificate, title: "重新创建证书？", message: "需要重新安装并信任新的描述文件。", confirmTitle: "重新创建", destructive: false) { createLocalCertificate() }
+            .actionConfirmation(isPresented: $replacingCertificate, title: "重新创建证书？", message: String(localized: "需要重新安装并信任新的描述文件。"), confirmTitle: String(localized: "重新创建"), destructive: false) { createLocalCertificate() }
             .alert("安装设置", isPresented: Binding(get: { issue != nil && certificateData == nil }, set: { if !$0 { issue = nil } })) {
                 Button("知道了", role: .cancel) { issue = nil }
             } message: { Text(issue ?? "") }
@@ -118,7 +118,7 @@ struct InstallationSettingsView: View {
     }
     private func refreshCertificate() {
         do {
-            certificateName = try InstallationCertificate.load()?.name ?? "未导入"
+            certificateName = try InstallationCertificate.load()?.name
             hasLocalProfile = try InstallationCertificate.localProfile() != nil
         }
         catch { issue = error.localizedDescription }
@@ -134,7 +134,7 @@ struct InstallationSettingsView: View {
                     localRoot: material.rootCertificate, localIdentifier: material.identifier)
                 store.installation.stopHosting(); store.settings.localInstallation = true; store.settings.localInstallHost = ManifestBuilder.defaultLocalHost
                 refreshCertificate()
-                notice = "证书已创建，请安装描述文件。"
+                notice = String(localized: "证书已创建，请安装描述文件。")
             } catch { issue = error.localizedDescription }
         }
     }
@@ -146,11 +146,11 @@ struct InstallationSettingsView: View {
             // leaves the screen) or a few seconds pass.
             defer { busy = false; Task { try? await Task.sleep(for: .seconds(8)); if working == .profile { working = nil } } }
             do {
-                guard let profile = try InstallationCertificate.localProfile() else { throw ToolError.message("请先创建证书") }
+                guard let profile = try InstallationCertificate.localProfile() else { throw ToolError.message(String(localized: "请先创建证书")) }
                 let url = try await store.installation.profileURL(data: profile)
                 openURL(url) { accepted in
-                    if accepted { notice = "请在「设置」中安装描述文件，然后在「通用 › 关于本机 › 证书信任设置」中开启信任。" }
-                    else { issue = "无法打开描述文件，请稍后重试。"; working = nil }
+                    if accepted { notice = String(localized: "请在「设置」中安装描述文件，然后在「通用 › 关于本机 › 证书信任设置」中开启信任。") }
+                    else { issue = String(localized: "无法打开描述文件，请稍后重试。"); working = nil }
                 }
             } catch { issue = error.localizedDescription; working = nil }
         }
@@ -161,7 +161,7 @@ struct InstallationSettingsView: View {
             try InstallationCertificate.save(data: data, password: password)
             store.installation.stopHosting()
             certificateData = nil; password = ""; issue = nil
-            refreshCertificate(); notice = "证书已导入。"
+            refreshCertificate(); notice = String(localized: "证书已导入。")
         } catch { issue = error.localizedDescription }
     }
     private func checkCertificate() {
@@ -171,9 +171,9 @@ struct InstallationSettingsView: View {
             defer { busy = false; working = nil }
             do {
                 let host = try ManifestBuilder.localHost(store.settings.localInstallHost)
-                guard let certificate = try InstallationCertificate.load() else { throw ToolError.message("请先创建或导入证书") }
+                guard let certificate = try InstallationCertificate.load() else { throw ToolError.message(String(localized: "请先创建或导入证书")) }
                 try await certificate.validateAsync(host: host)
-                notice = "证书有效。"
+                notice = String(localized: "证书有效。")
             } catch { issue = error.localizedDescription }
         }
     }

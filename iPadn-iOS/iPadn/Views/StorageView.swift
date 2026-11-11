@@ -34,15 +34,15 @@ struct StorageView: View {
         let older = olderVersions
         List {
             Section {
-                LabeledContent("安装包", value: measuring ? "正在计算…" : "\(completed.count) 个 · \(total(completed).byteLabel)")
-                if let available { LabeledContent("设备可用空间", value: available.byteLabel) }
+                LabeledContent(String(localized: "安装包"), value: measuring ? "正在计算…" : String(localized: "\(completed.count) 个 · \(total(completed).byteLabel)"))
+                if let available { LabeledContent(String(localized: "设备可用空间"), value: available.byteLabel) }
             } footer: {
                 Text("安装包保存在 iPadn 中，也可以在「文件」App 的「我的 iPhone › iPadn › Packages」中查看。")
             }
             if !older.isEmpty {
                 Section {
                     Button(role: .destructive) { confirmingCleanup = true } label: {
-                        LabeledContent("删除旧版本", value: "\(older.count) 个 · \(total(older).byteLabel)")
+                        LabeledContent(String(localized: "删除旧版本"), value: String(localized: "\(older.count) 个 · \(total(older).byteLabel)"))
                     }
                     .accessibilityIdentifier("storage.remove-older")
                 } footer: {
@@ -72,16 +72,16 @@ struct StorageView: View {
         }
         .animation(UX.motion(reduceMotion), value: completed.map(\.id))
         .disabled(deleting)
-        .overlay { if deleting { ProgressView("正在删除…").padding(20).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16)) } }
+        .overlay { if deleting { ProgressView(String(localized: "正在删除…")).padding(20).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16)) } }
         .toolPage().navigationTitle("存储空间").navigationBarTitleDisplayMode(.inline)
         .task(id: completed.map(\.id)) { await measure(completed) }
         .refreshable { await measure(self.completed) }
         .actionConfirmation(isPresented: $confirmingCleanup, title: "删除 \(older.count) 个旧版本？",
-                            message: "将释放 \(total(older).byteLabel)。每个应用保留最新下载的版本。", confirmTitle: "删除旧版本") {
+                            message: String(localized: "将释放 \(total(older).byteLabel)。每个应用保留最新下载的版本。"), confirmTitle: String(localized: "删除旧版本")) {
             remove(older)
         }
         .actionConfirmation(isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
-                            title: "删除这个安装包？", message: "下载任务和文件会一并删除。", confirmTitle: "删除") {
+                            title: "删除这个安装包？", message: String(localized: "下载任务和文件会一并删除。"), confirmTitle: String(localized: "删除")) {
             if let job = pendingDelete { remove([job]) }
             pendingDelete = nil
         }
@@ -110,7 +110,7 @@ struct StorageView: View {
             defer { deleting = false }
             do {
                 _ = try await manager.removeBatch(Set(jobs.map(\.id)))
-                store.infoMessage = "已释放 \(freed.byteLabel)"
+                store.infoMessage = String(localized: "已释放 \(freed.byteLabel)")
             } catch { store.errorMessage = error.localizedDescription }
         }
     }

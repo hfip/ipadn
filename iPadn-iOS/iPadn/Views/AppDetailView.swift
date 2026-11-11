@@ -5,7 +5,7 @@ struct AppDetailView: View {
     @EnvironmentObject private var store: ToolStore
     @EnvironmentObject private var apple: AppleService
     let app: StoreApp
-    /// Start the primary download as soon as the page opens (search "获取").
+    /// Start the primary download as soon as the page opens (search String(localized: "获取")).
     var autoStart = false
     @State private var autoStarted = false
     @State private var versions: [AppVersion] = []
@@ -94,7 +94,7 @@ struct AppDetailView: View {
                     CardSection(plain: true) {
                         ScreenshotStrip(screenshots: shots, platform: store.settings.store.platform,
                                         zoom: screenshotZoom) { viewing = $0 }
-                    } header: { sectionTitle("预览") }
+                    } header: { sectionTitle(String(localized: "预览")) }
                 }
                 versionSection
                 if store.settings.store.platform == .macOS { macSection }
@@ -104,7 +104,7 @@ struct AppDetailView: View {
                         if !showDescription {
                             Button("更多") { withAnimation { showDescription = true } }.font(.subheadline)
                         }
-                    } header: { sectionTitle("简介") }
+                    } header: { sectionTitle(String(localized: "简介")) }
                 }
                 if !app.isDelisted {
                     CardSection {
@@ -116,38 +116,38 @@ struct AppDetailView: View {
                             HStack {
                                 Label("多地区价格对比", systemImage: "globe")
                                 Spacer()
-                                Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+                                Image(systemName: "chevron.forward").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
                             }
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("detail.regionPrices")
-                    } header: { sectionTitle("价格") }
+                    } header: { sectionTitle(String(localized: "价格")) }
                 }
                 CardSection {
-                    if app.isDelisted { LabeledContent("商店状态", value: "已下架") }
-                    if !app.displayCategory.isEmpty { LabeledContent("类别", value: app.displayCategory) }
-                    if app.size > 0 { LabeledContent("大小", value: app.size.byteLabel) }
+                    if app.isDelisted { LabeledContent(String(localized: "商店状态"), value: String(localized: "已下架")) }
+                    if !app.displayCategory.isEmpty { LabeledContent(String(localized: "类别"), value: app.displayCategory) }
+                    if app.size > 0 { LabeledContent(String(localized: "大小"), value: app.size.byteLabel) }
                     if !app.minimumOS.isEmpty {
-                        LabeledContent("兼容性", value: "\(store.settings.store.platform.title) \(app.minimumOS) 或更高版本")
+                        LabeledContent(String(localized: "兼容性"), value: String(localized: "\(store.settings.store.platform.title) \(app.minimumOS) 或更高版本"))
                     }
-                    if !app.price.isEmpty { LabeledContent("价格", value: app.price) }
-                    LabeledContent("商店地区", value: store.settings.store.country)
+                    if !app.price.isEmpty { LabeledContent(String(localized: "价格"), value: app.price == "免费" ? String(localized: "免费") : app.price) }
+                    LabeledContent(String(localized: "商店地区"), value: store.settings.store.country)
                     if !app.bundleID.isEmpty {
                         LabeledContent("Bundle ID") {
                             Text(app.bundleID).font(.footnote.monospaced()).textSelection(.enabled).multilineTextAlignment(.trailing)
                         }
                     }
-                    if let developer = extras?.developer, !developer.isEmpty { LabeledContent("开发者", value: developer) }
+                    if let developer = extras?.developer, !developer.isEmpty { LabeledContent(String(localized: "开发者"), value: developer) }
                     if store.settings.store.platform != .macOS {
-                        Link(destination: storeURL) { Label("在 App Store 中查看", systemImage: "arrow.up.right.square") }
+                        Link(destination: storeURL) { Label("在 App Store 中查看", systemImage: "arrow.up.forward.square") }
                     }
-                } header: { sectionTitle("信息") }
+                } header: { sectionTitle(String(localized: "信息")) }
                 if !developerApps.isEmpty {
                     CardSection {
                         DeveloperAppsStrip(apps: developerApps)
                             .cardRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-                    } header: { sectionTitle(extras?.developer.isEmpty == false ? "更多来自 \(extras!.developer)" : "同一开发者的其他应用") }
+                    } header: { sectionTitle(extras?.developer.isEmpty == false ? String(localized: "更多来自 \(extras!.developer)") : String(localized: "同一开发者的其他应用")) }
                 }
             }
             .padding(.top, 8).padding(.bottom, 24)
@@ -167,13 +167,13 @@ struct AppDetailView: View {
                 Button {
                     let following = !store.isFavorite(app)
                     store.toggleFavorite(app); UX.feedback()
-                    if following { store.infoMessage = "已关注，有新版本、降价或下架时会提醒你" }
+                    if following { store.infoMessage = String(localized: "已关注，有新版本、降价或下架时会提醒你") }
                 } label: {
                     Image(systemName: store.isFavorite(app) ? "bell.fill" : "bell")
                         .contentTransition(.symbolEffect(.replace))
                         .frame(minWidth: 44, minHeight: 44)
                 }
-                .accessibilityLabel(store.isFavorite(app) ? "取消关注" : "关注应用")
+                .accessibilityLabel(store.isFavorite(app) ? String(localized: "取消关注") : String(localized: "关注应用"))
             }
         }
         .alert("下载 Mac 安装包", isPresented: $enteringMacDownloadURL) {
@@ -183,7 +183,7 @@ struct AppDetailView: View {
             Button("加入下载") {
                 let value = macDownloadURL.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard let url = URL(string: value), MacInstallerService.directPackage(url) else {
-                    store.errorMessage = "请输入有效的 HTTPS 下载链接，文件需要是 DMG、PKG 或 ZIP。"
+                    store.errorMessage = String(localized: "请输入有效的 HTTPS 下载链接，文件需要是 DMG、PKG 或 ZIP。")
                     return
                 }
                 enqueueMacInstaller(MacInstallerService.Installer(url: url))
@@ -292,12 +292,12 @@ struct AppDetailView: View {
                 Text(app.name.isEmpty ? app.bundleID : app.name).font(.title3.weight(.bold))
                     .lineLimit(2).minimumScaleFactor(0.85).fixedSize(horizontal: false, vertical: true)
                 if app.isDelisted {
-                    TagBadge(text: "已下架", tint: .orange)
+                    TagBadge(text: String(localized: "已下架"), tint: .orange)
                 } else if !app.displayCategory.isEmpty {
                     Text(app.displayCategory).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(app.version.isEmpty ? "版本待查询" : "v\(app.version)")
+                    Text(app.version.isEmpty ? String(localized: "版本待查询") : "v\(app.version)")
                         .font(.footnote.monospacedDigit()).foregroundStyle(.secondary)
                         .layoutPriority(1)
                         .accessibilityIdentifier("app.version")
@@ -341,7 +341,7 @@ struct AppDetailView: View {
         } else if apple.active == nil {
             RowCapsule(title: "登录", filled: true) { showLogin = true }
         } else if store.settings.store.platform.supportsIPA {
-            RowCapsule(title: app.price.isEmpty || app.price == "免费" ? "获取" : "下载", filled: true) {
+            RowCapsule(title: app.price.isEmpty || app.price == "免费" ? String(localized: "获取") : String(localized: "下载"), filled: true) {
                 download(versionID: app.externalVersionID)
             }
             .accessibilityIdentifier("detail.get")
@@ -368,24 +368,24 @@ struct AppDetailView: View {
         let platform = store.settings.store.platform
         var items: [InfoStripItem] = []
         if app.rating > 0 {
-            items.append(InfoStripItem(caption: "评分", value: String(format: "%.1f", app.rating),
+            items.append(InfoStripItem(caption: String(localized: "评分"), value: String(format: "%.1f", app.rating),
                                        detail: String(repeating: "★", count: max(0, min(5, Int(app.rating.rounded()))))))
         }
         if app.size > 0 {
             let parts = app.size.byteLabel.components(separatedBy: " ")
-            items.append(InfoStripItem(caption: "大小", value: parts.first ?? app.size.byteLabel, detail: parts.count > 1 ? parts.last : nil))
+            items.append(InfoStripItem(caption: String(localized: "大小"), value: parts.first ?? app.size.byteLabel, detail: parts.count > 1 ? parts.last : nil))
         }
         if !app.minimumOS.isEmpty {
-            items.append(InfoStripItem(caption: "兼容性", value: app.minimumOS + "+", detail: platform.title))
+            items.append(InfoStripItem(caption: String(localized: "兼容性"), value: app.minimumOS + "+", detail: platform.title))
         } else {
-            items.append(InfoStripItem(caption: "平台", value: platform.title, symbol: platform.symbol))
+            items.append(InfoStripItem(caption: String(localized: "平台"), value: platform.title, symbol: platform.symbol))
         }
         if app.isDelisted {
-            items.append(InfoStripItem(caption: "状态", value: "已下架", symbol: "archivebox"))
+            items.append(InfoStripItem(caption: String(localized: "状态"), value: String(localized: "已下架"), symbol: "archivebox"))
         } else if !app.displayCategory.isEmpty {
-            items.append(InfoStripItem(caption: "类别", value: app.displayCategory, symbol: "square.grid.2x2"))
+            items.append(InfoStripItem(caption: String(localized: "类别"), value: app.displayCategory, symbol: "square.grid.2x2"))
         }
-        items.append(InfoStripItem(caption: "地区", value: store.settings.store.country, detail: "商店"))
+        items.append(InfoStripItem(caption: String(localized: "地区"), value: store.settings.store.country, detail: String(localized: "商店")))
         return items
     }
 
@@ -398,7 +398,7 @@ struct AppDetailView: View {
                 Label(versionNote, systemImage: "info.circle").font(.footnote).foregroundStyle(.secondary)
             }
             if versions.count > 6 {
-                SearchInput(text: $versionSearch, placeholder: "筛选版本号或版本 ID")
+                SearchInput(text: $versionSearch, placeholder: String(localized: "筛选版本号或版本 ID"))
             }
             let matches = filtered
             // A search shows every match; otherwise ten until expanded.
@@ -422,7 +422,7 @@ struct AppDetailView: View {
                     withAnimation(.snappy) { showAllVersions.toggle() }
                 } label: {
                     HStack {
-                        Text(showAllVersions ? "收起" : "显示全部 \(matches.count) 个版本")
+                        Text(showAllVersions ? String(localized: "收起") : String(localized: "显示全部 \(matches.count) 个版本"))
                         Spacer()
                         Image(systemName: "chevron.down").rotationEffect(.degrees(showAllVersions ? 180 : 0))
                     }
@@ -434,7 +434,7 @@ struct AppDetailView: View {
             if versions.isEmpty && !versionsLoading && versionError == nil {
                 Text("暂无历史版本").font(.subheadline).foregroundStyle(.secondary)
             }
-            DisclosureGroup("手动指定版本 ID") {
+            DisclosureGroup(String(localized: "手动指定版本 ID")) {
                 HStack {
                     TextField("内部版本 ID", text: $manualID).keyboardType(.numberPad)
                     RowCapsule(title: "下载", enabled: !manualID.isEmpty && !downloadLoading) { download(versionID: manualID) }
@@ -442,7 +442,7 @@ struct AppDetailView: View {
             }
         } header: {
             HStack(alignment: .firstTextBaseline) {
-                sectionTitle("版本历史")
+                sectionTitle(String(localized: "版本历史"))
                 Spacer()
                 RefreshButton(busy: versionsLoading) { reloadID += 1 }
                     .accessibilityIdentifier("detail.versions.refresh")
@@ -460,17 +460,17 @@ struct AppDetailView: View {
         return VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(known ? "版本 \(name)" : reading ? "版本 0.0.0" : "未知版本")
+                    Text(known ? String(localized: "版本 \(name)") : reading ? String(localized: "版本 0.0.0") : String(localized: "未知版本"))
                         .font(.body.weight(.medium))
                         .redacted(reason: reading ? .placeholder : [])
-                    Text([date, "版本 ID \(version.id)"].compactMap { $0 }.joined(separator: " · "))
+                    Text([date, String(localized: "版本 ID \(version.id)")].compactMap { $0 }.joined(separator: " · "))
                         .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                         .textSelection(.enabled)
                 }
                 .animation(.easeOut(duration: 0.2), value: name)
                 Spacer(minLength: 8)
                 RowCapsule(title: "下载", enabled: !downloadLoading && !macOfficialLoading) { download(versionID: version.id) }
-                    .accessibilityLabel(known ? "下载版本 \(name)" : "下载版本 ID \(version.id)")
+                    .accessibilityLabel(known ? String(localized: "下载版本 \(name)") : String(localized: "下载版本 ID \(version.id)"))
             }
             if let note, !note.text.isEmpty {
                 Button {
@@ -479,7 +479,7 @@ struct AppDetailView: View {
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Text(expanded ? "收起更新说明" : "更新说明")
+                        Text(expanded ? String(localized: "收起更新说明") : String(localized: "更新说明"))
                         Image(systemName: "chevron.down").rotationEffect(.degrees(expanded ? 180 : 0))
                     }
                     .font(.caption.weight(.medium))
@@ -518,15 +518,15 @@ struct AppDetailView: View {
     @ViewBuilder private var macSection: some View {
         CardSection {
             Text(MacPackageDecryptor.isAvailable
-                 ? "下载完成后可导出到 Mac 安装。"
-                 : "仅支持下载未加密的 Mac 安装包。")
+                 ? String(localized: "下载完成后可导出到 Mac 安装。")
+                 : String(localized: "仅支持下载未加密的 Mac 安装包。"))
                 .font(.footnote).foregroundStyle(.secondary)
             ForEach(macInstallers) { installer in
                 HStack(spacing: 12) {
                     Image(systemName: "shippingbox").foregroundStyle(.secondary).frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(installer.title).font(.subheadline.weight(.medium)).lineLimit(2)
-                        Text("来自开发者网站 · " + installer.format.uppercased()).font(.caption).foregroundStyle(.secondary)
+                        Text(String(localized: "来自开发者网站 · ") + installer.format.uppercased()).font(.caption).foregroundStyle(.secondary)
                     }
                     Spacer(minLength: 8)
                     RowCapsule(title: "下载") { enqueueMacInstaller(installer) }
@@ -542,7 +542,7 @@ struct AppDetailView: View {
             // Looking for the developer's installers shows here rather than
             // as a row that comes and goes.
             HStack(alignment: .firstTextBaseline) {
-                sectionTitle("Mac 安装包")
+                sectionTitle(String(localized: "Mac 安装包"))
                 Spacer()
                 if showsMacSpinner { ProgressView().controlSize(.small).transition(.opacity) }
             }
@@ -550,7 +550,7 @@ struct AppDetailView: View {
         }
     }
 
-    private func copy(_ text: String) { UIPasteboard.general.string = text; store.infoMessage = "已复制到剪贴板"; UX.feedback() }
+    private func copy(_ text: String) { UIPasteboard.general.string = text; store.infoMessage = String(localized: "已复制到剪贴板"); UX.feedback() }
     /// Returns whether the list was loaded. The previous list stays visible
     /// until the new one arrives.
     @discardableResult
@@ -568,11 +568,11 @@ struct AppDetailView: View {
             } catch is AppleLicenseError {
                 // Not got by this account yet: show what is public, and say why.
                 result = try await store.loadVersions(for: app, force: force, official: false)
-                versionNote = "此账号还没有获取这个应用，下面是公开的版本资料。获取后可查看完整列表。"
+                versionNote = String(localized: "此账号还没有获取这个应用，下面是公开的版本资料。获取后可查看完整列表。")
             } catch {
                 if usesApple, let publicVersions = try? await store.loadVersions(for: app, force: force, official: false), !publicVersions.isEmpty {
                     result = publicVersions
-                    versionNote = "Apple 版本服务暂时未返回，已为你显示公开版本列表。可稍后点击刷新重试。"
+                    versionNote = String(localized: "Apple 版本服务暂时未返回，已为你显示公开版本列表。可稍后点击刷新重试。")
                 } else {
                     throw error
                 }
@@ -600,7 +600,7 @@ struct AppDetailView: View {
         catch {
             if !Task.isCancelled {
                 let message = error.localizedDescription
-                if message.contains("暂时无法获取历史版本") || error is AppleLicenseError {
+                if message == AppErrorMessage.historyUnavailable || error is AppleLicenseError {
                     versionError = message
                 } else if let tool = error as? ToolError, case .message(let text) = tool {
                     versionError = text
@@ -624,14 +624,14 @@ struct AppDetailView: View {
                 let offer = try await apple.macPackageOffer(app, versionID: versionID, useCache: store.settings.useSignerCache)
                 try Task.checkCancellation()
                 try store.downloads.enqueueOfficialMacPackage(offer, for: app)
-                store.infoMessage = "已开始下载"
+                store.infoMessage = String(localized: "已开始下载")
                 store.tab = 1
                 reloadIfLicenseWasMissing()
             } catch AppleAuthError.reauthenticationRequired {
                 reauthenticationID = apple.activeID
                 showLogin = true
             } catch AppleLoginError.verificationRequired {
-                store.errorMessage = "请在「账号」中重新验证 Apple 账号后重试。"
+                store.errorMessage = String(localized: "请在「账号」中重新验证 Apple 账号后重试。")
             } catch is CancellationError { }
             catch {
                 store.errorMessage = error.localizedDescription
@@ -674,7 +674,7 @@ struct AppDetailView: View {
 
     private func download(versionID: String?) {
         guard !downloadLoading else { return }
-        if let versionID, !versionID.isEmpty, !versionID.allSatisfy({ $0.isASCII && $0.isNumber }) { store.errorMessage = "版本 ID 只能包含数字"; return }
+        if let versionID, !versionID.isEmpty, !versionID.allSatisfy({ $0.isASCII && $0.isNumber }) { store.errorMessage = String(localized: "版本 ID 只能包含数字"); return }
         guard store.settings.store.platform.supportsIPA else {
             downloadAppleMacPKG(versionID: versionID?.isEmpty == true ? nil : versionID)
             return

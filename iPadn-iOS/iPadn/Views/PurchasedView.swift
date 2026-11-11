@@ -34,9 +34,9 @@ struct PurchasedView: View {
         // a shared App ID is a different package.
         for job in manager.jobs where job.status == .completed && [AppPlatform.iOS, .iPadOS].contains(job.updatePlatform) {
             if let key = job.updateKey, let latest = store.availableUpdates[key] {
-                badges[job.app.id] = ("有新版本 \(latest.version)", UX.tint)
+                badges[job.app.id] = (String(localized: "有新版本 \(latest.version)"), UX.tint)
             } else if badges[job.app.id] == nil {
-                badges[job.app.id] = (job.app.version.isEmpty ? "已下载" : "已下载 \(job.app.version)", .green)
+                badges[job.app.id] = (job.app.version.isEmpty ? String(localized: "已下载") : String(localized: "已下载 \(job.app.version)"), .green)
             }
         }
         return badges
@@ -53,16 +53,16 @@ struct PurchasedView: View {
     private func findDelisted() {
         Task {
             guard let count = await store.checkOwnedListings() else {
-                if !store.checkingListings { store.errorMessage = "暂时无法检查商店状态，请稍后重试。" }
+                if !store.checkingListings { store.errorMessage = String(localized: "暂时无法检查商店状态，请稍后重试。") }
                 return
             }
-            if count == 0 { store.infoMessage = "所有已购应用都还在售"; return }
+            if count == 0 { store.infoMessage = String(localized: "所有已购应用都还在售"); return }
             withAnimation { delistedOnly = true; term = ""; query = ""; months = 0 }
         }
     }
     private func export() {
         do { share = SharedFile(url: try store.exportOwned()) }
-        catch { store.errorMessage = "导出失败：" + error.localizedDescription }
+        catch { store.errorMessage = String(localized: "导出失败：") + error.localizedDescription }
     }
     /// Adds the selected apps one after another; the list order is kept.
     private func downloadSelected() {
@@ -76,7 +76,7 @@ struct PurchasedView: View {
             batchProgress = nil
             if result.added > 0 {
                 selection.removeAll(); selecting = false
-                store.infoMessage = "已添加 \(result.added) 个下载任务"
+                store.infoMessage = String(localized: "已添加 \(result.added) 个下载任务")
             }
             if !result.failures.isEmpty { store.errorMessage = result.failures.joined(separator: "\n") }
         }
@@ -107,7 +107,7 @@ struct PurchasedView: View {
             .listRowBackground(Color.clear).listRowSeparator(.hidden)
             if let account = apple.active {
                 Section {
-                    SearchInput(text: $term, placeholder: "搜索已购项目或 App ID", capsule: true)
+                    SearchInput(text: $term, placeholder: String(localized: "搜索已购项目或 App ID"), capsule: true)
                     Picker("购买时间", selection: $months) {
                         Text("全部").tag(0); Text("1 个月").tag(1); Text("6 个月").tag(6); Text("1 年").tag(12)
                     }.pickerStyle(.segmented)
@@ -135,7 +135,7 @@ struct PurchasedView: View {
                             Button {
                                 download(backups.map(\.storeApp))
                             } label: {
-                                Label(batchProgress.map { "正在添加 \($0.done)/\($0.total)" } ?? "全部备份（\(backups.count) 个）",
+                                Label(batchProgress.map { String(localized: "正在添加 \($0.done)/\($0.total)") } ?? String(localized: "全部备份（\(backups.count) 个）"),
                                       systemImage: "square.and.arrow.down.on.square")
                                     .fontWeight(.semibold)
                             }
@@ -156,7 +156,7 @@ struct PurchasedView: View {
                     Section {
                         ForEach(visible) { app in
                             let subtitle = app.purchaseDate.map {
-                                "购于 \($0.formatted(.dateTime.year().month(.defaultDigits).day()))"
+                                String(localized: "购于 \($0.formatted(.dateTime.year().month(.defaultDigits).day()))")
                             }
                             if selecting {
                                 Button { toggle(app.id) } label: {
@@ -170,7 +170,7 @@ struct PurchasedView: View {
                                     .contentShape(Rectangle())
                                 }
                                 .buttonStyle(.plain)
-                                .accessibilityLabel((selection.contains(app.id) ? "取消选择 " : "选择 ") + app.name)
+                                .accessibilityLabel((selection.contains(app.id) ? String(localized: "取消选择 ") : String(localized: "选择 ")) + app.name)
                             } else {
                                 NavigationLink { AppDetailView(app: storeApp(app)) } label: {
                                     AppRow(app: storeApp(app), subtitle: subtitle, badge: badges[app.id]) {
@@ -184,7 +184,7 @@ struct PurchasedView: View {
                         HStack(alignment: .firstTextBaseline) {
                             Text("\(visible.count) 个项目")
                             Spacer()
-                            Button(selecting ? "完成" : "选择") {
+                            Button(selecting ? String(localized: "完成") : String(localized: "选择")) {
                                 withAnimation(.snappy) { selecting.toggle(); selection.removeAll() }
                             }
                             .font(.body.weight(.semibold))
@@ -197,16 +197,16 @@ struct PurchasedView: View {
                 } else if !store.ownedLoading && !store.cacheLoading && store.ownedError == nil {
                     Section {
                         if delistedOnly && term.isEmpty && months == 0 {
-                            EmptyState(title: "没有已下架的应用", message: "你获取过的应用都还在商店出售。", symbol: "checkmark.seal", actionTitle: "显示全部", action: { delistedOnly = false })
+                            EmptyState(title: "没有已下架的应用", message: String(localized: "你获取过的应用都还在商店出售。"), symbol: "checkmark.seal", actionTitle: String(localized: "显示全部"), action: { delistedOnly = false })
                         } else if term.isEmpty && months == 0 {
-                            EmptyState(title: "暂无已购记录", message: "同步后可在这里查找并下载你获取过的应用。", symbol: "clock.arrow.circlepath", actionTitle: "立即同步", action: { Task { await store.refreshOwned() } })
+                            EmptyState(title: "暂无已购记录", message: String(localized: "同步后可在这里查找并下载你获取过的应用。"), symbol: "clock.arrow.circlepath", actionTitle: String(localized: "立即同步"), action: { Task { await store.refreshOwned() } })
                         } else {
-                            EmptyState(title: "没有匹配的应用", message: "换个关键词，或调整时间范围。", symbol: "line.3.horizontal.decrease.circle", actionTitle: "清除筛选", action: { term = ""; query = ""; months = 0 })
+                            EmptyState(title: "没有匹配的应用", message: String(localized: "换个关键词，或调整时间范围。"), symbol: "line.3.horizontal.decrease.circle", actionTitle: String(localized: "清除筛选"), action: { term = ""; query = ""; months = 0 })
                         }
                     }
                 }
             } else {
-                Section { EmptyState(title: "尚未登录", message: "登录后即可查看你获取过的应用。", symbol: "person.crop.circle.badge.checkmark", actionTitle: "登录账号", action: { showLogin = true }) }
+                Section { EmptyState(title: "尚未登录", message: String(localized: "登录后即可查看你获取过的应用。"), symbol: "person.crop.circle.badge.checkmark", actionTitle: String(localized: "登录账号"), action: { showLogin = true }) }
             }
         }
         .navigationDestination(isPresented: $showLogin) { LoginView() }
@@ -214,7 +214,7 @@ struct PurchasedView: View {
         .navigationDestination(item: $getting) { app in AppDetailView(app: app, autoStart: true) }
         .task(id: apple.activeID) { await store.ensureOwnedLoaded() }
         .toolPage()
-        .rootTabBar("已购项目", headerScrolledAway: headerAway)
+        .rootTabBar(String(localized: "已购项目"), headerScrolledAway: headerAway)
         .task(id: "\(apple.activeID ?? "")|\(store.ownedRevision)") { await store.loadOwnedArtwork() }
         .refreshable { if apple.active != nil { await store.refreshOwned() } }
         .task(id: term) {
@@ -229,7 +229,7 @@ struct PurchasedView: View {
                 HStack(spacing: 12) {
                     let visible = filtered
                     let allSelected = !visible.isEmpty && visible.allSatisfy { selection.contains($0.id) }
-                    Button(allSelected ? "取消全选" : "全选") {
+                    Button(allSelected ? String(localized: "取消全选") : String(localized: "全选")) {
                         if allSelected { selection.subtract(visible.map(\.id)) } else { selection.formUnion(visible.map(\.id)) }
                     }
                     .disabled(visible.isEmpty || batchProgress != nil)
@@ -239,7 +239,7 @@ struct PurchasedView: View {
                         Text("正在添加 \(batchProgress.done)/\(batchProgress.total)").font(.subheadline.monospacedDigit())
                     } else {
                         Button { downloadSelected() } label: {
-                            Text(selection.isEmpty ? "下载所选" : "下载所选（\(selection.count)）").fontWeight(.semibold)
+                            Text(selection.isEmpty ? String(localized: "下载所选") : String(localized: "下载所选（\(selection.count)）")).fontWeight(.semibold)
                         }
                         .disabled(selection.isEmpty)
                         .accessibilityIdentifier("purchased.download-selected")

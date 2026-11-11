@@ -119,12 +119,14 @@ final class CoreTests: XCTestCase {
     }
 
     func testArabicStringsAreBundled() throws {
-        // The catalog must be compiled into ar.lproj, not copied as a resource.
+        // The catalogs must be compiled into ar.lproj, not copied as resources.
         XCTAssertTrue(Bundle.main.localizations.contains("ar"))
-        let arabic = Locale(identifier: "ar")
-        XCTAssertEqual(String(localized: "设置", bundle: .main, locale: arabic), "الإعدادات")
-        XCTAssertEqual(String(localized: "获取 %@", bundle: .main, locale: arabic), "احصل على %@")
-        XCTAssertNotEqual(String(localized: "设置", bundle: .main, locale: Locale(identifier: "zh-Hans")), "الإعدادات")
+        let path = try XCTUnwrap(Bundle.main.path(forResource: "ar", ofType: "lproj"))
+        let arabic = try XCTUnwrap(Bundle(path: path))
+        XCTAssertEqual(arabic.localizedString(forKey: "设置", value: nil, table: nil), "الإعدادات")
+        XCTAssertEqual(arabic.localizedString(forKey: "获取 %@", value: nil, table: nil), "احصل على %@")
+        XCTAssertEqual(arabic.localizedString(forKey: "NSLocalNetworkUsageDescription", value: nil, table: "InfoPlist"),
+                       "تحميل موارد التوقيع وتقديم ملفات حزم التثبيت عبر عنوان الاسترجاع المحلي.")
     }
 
     func testInAppPurchasesParsedFromProductPageAndGroupedByTier() throws {

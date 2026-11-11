@@ -21,7 +21,7 @@ enum StoreRegions {
 
     static func name(_ code: String) -> String { names[code] ?? code }
     private static let names: [String: String] = {
-        let locale = Locale.current
+        let locale = AppLanguage.locale
         return Dictionary(uniqueKeysWithValues: codes.map { ($0, locale.localizedString(forRegionCode: $0) ?? $0) })
     }()
     /// All storefronts in the order of their names in the current language.

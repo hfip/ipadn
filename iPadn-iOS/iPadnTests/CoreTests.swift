@@ -118,6 +118,15 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(StoreRegions.name("TR"), "土耳其")
     }
 
+    func testArabicStringsAreBundled() throws {
+        // The catalog must be compiled into ar.lproj, not copied as a resource.
+        XCTAssertTrue(Bundle.main.localizations.contains("ar"))
+        let arabic = Locale(identifier: "ar")
+        XCTAssertEqual(String(localized: "设置", bundle: .main, locale: arabic), "الإعدادات")
+        XCTAssertEqual(String(localized: "获取 %@", bundle: .main, locale: arabic), "احصل على %@")
+        XCTAssertNotEqual(String(localized: "设置", bundle: .main, locale: Locale(identifier: "zh-Hans")), "الإعدادات")
+    }
+
     func testInAppPurchasesParsedFromProductPageAndGroupedByTier() throws {
         // The shape of apps.apple.com's serialized page data (information section).
         let data = #"{"data":[{"shelves":[{"$kind":"Annotation","title":"Compatibility","items":[{"$kind":"textPair","leadingText":"iPhone","trailingText":"Requires iOS 15.0 or later."}]},"#

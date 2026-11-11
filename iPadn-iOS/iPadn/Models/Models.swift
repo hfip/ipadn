@@ -11,6 +11,14 @@ struct HTTPStatusError: LocalizedError {
     var errorDescription: String? { code == 404 ? String(localized: "找不到相关内容") : String(localized: "网络请求失败（\(code)），请稍后重试") }
 }
 
+enum AppLanguage {
+    /// The language the interface runs in. Storefront and currency names must
+    /// follow it, so they never mix scripts with the rest of the UI.
+    static var locale: Locale {
+        Locale(identifier: Bundle.main.preferredLocalizations.first ?? "zh-Hans")
+    }
+}
+
 enum AppErrorMessage {
     /// Thrown and compared as one value, so the check survives translation.
     static let historyUnavailable = String(localized: "暂时无法获取历史版本，可打开「从 Apple 获取完整版本列表」或手动输入版本 ID")

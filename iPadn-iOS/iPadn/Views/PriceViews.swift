@@ -141,7 +141,7 @@ struct RegionPriceView: View {
     }
 
     private func currencyName(_ code: String) -> String {
-        (Locale.current.localizedString(forCurrencyCode: code) ?? code) + " (\(code))"
+        (AppLanguage.locale.localizedString(forCurrencyCode: code) ?? code) + " (\(code))"
     }
 
     private func load() async {
